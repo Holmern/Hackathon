@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from datetime import date
@@ -21,8 +21,9 @@ RANK_TYPES = (
 
 
 class Customer(models.Model):
-    First_name = models.CharField(max_length=20)
-    Last_name = models.CharField(max_length=40)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=20)
+    last_name = models.CharField(max_length=40)
     phone = models.CharField(max_length=40)
     email = models.EmailField(max_length = 100)
     rank = models.CharField(max_length=11, choices = RANK_TYPES)
@@ -31,7 +32,7 @@ class Customer(models.Model):
     def __str__(self):
         return '{} {} {} {} {} {}'.format(self.First_name, self.Last_name, self.phone, self.email, self.rank, self.bank_id)
 
-
+'''
 class User(AbstractUser, models.Model):   
     kind_of_user =  models.CharField(max_length=20)
     user_fk = models.CharField(max_length=20)
@@ -41,11 +42,12 @@ class User(AbstractUser, models.Model):
     
     def __str__(self):
         return "{}".format(self.username_fk)
-
+'''
 
 class Employee(models.Model):
-    First_name = models.CharField(max_length=20)
-    Last_name = models.CharField(max_length=40)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=20)
+    last_name = models.CharField(max_length=40)
     phone = models.CharField(max_length=40)
     email = models.EmailField(max_length = 100)
     bank_id = models.ForeignKey(Bank, on_delete = models.CASCADE, default = None)
@@ -82,7 +84,3 @@ class Transaction(models.Model):
 
     def __str__(self):
         return '{} {} {} {} {}'.format(self.description, self.amount, self.from_account_id, self.to_account_id, self.timestamp, self.customer_id)
-
-
-
-
