@@ -9,6 +9,9 @@ class Bank(models.Model):
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=100)
 
+    def __str__(self):
+        return '{} {}'.format(self.name, self.address)
+
 
 RANK_TYPES = (
     ("Basis", "Basis"),
@@ -24,6 +27,9 @@ class Customer(models.Model):
     email = models.EmailField(max_length = 100)
     rank = models.CharField(max_length=11, choices = RANK_TYPES)
     bank_id = models.ForeignKey(Bank, on_delete = models.CASCADE, default = None)
+
+    def __str__(self):
+        return '{} {} {} {} {} {}'.format(self.First_name, self.Last_name, self.phone, self.email, self.rank, self.bank_id)
 
 
 class User(AbstractUser, models.Model):   
@@ -44,6 +50,9 @@ class Employee(models.Model):
     email = models.EmailField(max_length = 100)
     bank_id = models.ForeignKey(Bank, on_delete = models.CASCADE, default = None)
 
+    def __str__(self):
+        return '{} {} {} {} {}'.format(self.First_name, self.Last_name, self.phone, self.email, self.bank_id)
+
 
 ACCOUNT_TYPES = (
     ("Checkings", "Checkings"),
@@ -59,6 +68,9 @@ class Account(models.Model):
     customer_id = models.ForeignKey(Customer, on_delete = models.CASCADE, default = None)
     bank_id = models.ForeignKey(Bank, on_delete = models.CASCADE, default = None)
 
+    def __str__(self):
+        return '{} {} {} {} {}'.format(self.amount, self.name, self.account_type, self.customer_id, self.bank_id)
+
 
 class Transaction(models.Model):
     description = models.CharField(max_length=40)
@@ -67,6 +79,9 @@ class Transaction(models.Model):
     to_account_id = models.IntegerField()
     timestamp = models.DateTimeField(auto_now_add=True)
     customer_id = models.ForeignKey(Customer, on_delete = models.CASCADE, default = None)
+
+    def __str__(self):
+        return '{} {} {} {} {}'.format(self.description, self.amount, self.from_account_id, self.to_account_id, self.timestamp, self.customer_id)
 
 
 
