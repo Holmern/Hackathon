@@ -28,17 +28,12 @@ def transaction_action(request):
     from_acc = request.POST["from_acc"]
     to_acc = request.POST["to_acc"]
     amount = request.POST["amount"]
-    customer_id = Customer.objects.get(user=request.user).id
-
-    from_account = Account.objects.get(id=from_acc, customer_id=customer_id)
-    fromnew = amount - from_account.amount
-    to_account = Account.objects.get(id=to_acc, customer_id=customer_id)
-    tonew= amount + to_account.amount
+    customer_id = Customer.objects.get(user=request.user)
 
     CreateTransaction(description, from_acc, to_acc, amount, customer_id)
-    CompleteTransaction(from_acc, to_acc, amount, fromnew, tonew, customer_id)
+    # CompleteTransaction(from_acc, to_acc, amount, fromnew, tonew, customer_id)
     
-    return HttpResponseRedirect(reverse('BankApp/index'))
+    return HttpResponseRedirect(reverse('BankApp:index'))
 
 
 

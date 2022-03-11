@@ -65,7 +65,7 @@ ACCOUNT_TYPES = (
 
 
 class Account(models.Model):
-    amount = models.FloatField()
+    amount = models.FloatField(null=True)
     name = models.CharField(max_length=40)
     account_type = models.CharField(max_length=11, choices = ACCOUNT_TYPES)
     customer_id = models.ForeignKey(Customer, on_delete = models.CASCADE, default = None)
@@ -77,7 +77,7 @@ class Account(models.Model):
 
 class Transaction(models.Model):
     description = models.CharField(max_length=40)
-    amount = models.FloatField()
+    amount = models.FloatField(null=True)
     t_type = models.CharField(max_length=40)
     account_id = models.IntegerField()
     timestamp = models.DateTimeField(auto_now_add=True)
