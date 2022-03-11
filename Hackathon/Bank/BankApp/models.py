@@ -6,6 +6,7 @@ from datetime import date
 
 # Create your models here.
 class Bank(models.Model):
+
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=100)
 
@@ -30,7 +31,7 @@ class Customer(models.Model):
     bank_id = models.ForeignKey(Bank, on_delete = models.CASCADE, default = None)
 
     def __str__(self):
-        return '{} {} {} {} {} {}'.format(self.first_name, self.last_name, self.phone, self.email, self.rank, self.bank_id)
+        return '{} {} {} {} {} {} {}'.format(self.id, self.first_name, self.last_name, self.phone, self.email, self.rank, self.bank_id)
 
 '''
 class User(AbstractUser, models.Model):   
