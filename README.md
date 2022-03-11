@@ -17,7 +17,20 @@ Use Python 3.9 or newer, Django 4.0 or newer
 
 Your project should be documented appropriately (e.g., ER-Diagram, short intro), but you are not supposed to write a report.
 
+### User Stories
+
 ## Conceptuel Model 
+![Conceptuel Model](Banking_conceptional.png)
 
+## ER Diagram
+![ER Diagram](Banking_Hack_ER.png)
 
-## EER Diagram
+## Running the project
+Once the project is on your local machine, run the following commands in the terminal.
+1. Run `python manage.py makemigrations`
+ 
+2. Run `python manage.py migrate`
+
+3. Run `python manage.py runserver`
+
+**Note:** `python manage.py makemigrations` and `python manage.py migrate` should only be run if changes to the model classes has occurred.
