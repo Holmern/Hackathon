@@ -30,7 +30,7 @@ class Customer(models.Model):
     bank_id = models.ForeignKey(Bank, on_delete = models.CASCADE, default = None)
 
     def __str__(self):
-        return '{} {} {} {} {} {}'.format(self.First_name, self.Last_name, self.phone, self.email, self.rank, self.bank_id)
+        return '{} {} {} {} {} {}'.format(self.first_name, self.last_name, self.phone, self.email, self.rank, self.bank_id)
 
 '''
 class User(AbstractUser, models.Model):   
@@ -53,7 +53,7 @@ class Employee(models.Model):
     bank_id = models.ForeignKey(Bank, on_delete = models.CASCADE, default = None)
 
     def __str__(self):
-        return '{} {} {} {} {}'.format(self.First_name, self.Last_name, self.phone, self.email, self.bank_id)
+        return '{} {} {} {} {}'.format(self.first_name, self.last_name, self.phone, self.email, self.bank_id)
 
 
 ACCOUNT_TYPES = (
@@ -77,10 +77,10 @@ class Account(models.Model):
 class Transaction(models.Model):
     description = models.CharField(max_length=40)
     amount = models.FloatField()
-    from_account_id = models.IntegerField()
-    to_account_id = models.IntegerField()
+    t_type = models.CharField(max_length=40)
+    account_id = models.IntegerField()
     timestamp = models.DateTimeField(auto_now_add=True)
     customer_id = models.ForeignKey(Customer, on_delete = models.CASCADE, default = None)
 
     def __str__(self):
-        return '{} {} {} {} {}'.format(self.description, self.amount, self.from_account_id, self.to_account_id, self.timestamp, self.customer_id)
+        return '{} {} {} {} {} {}'.format(self.description, self.amount, self.account_id, self.t_type, self.timestamp, self.customer_id)
