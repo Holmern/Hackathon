@@ -17,6 +17,8 @@ Use Python 3.9 or newer, Django 4.0 or newer
 
 Your project should be documented appropriately (e.g., ER-Diagram, short intro), but you are not supposed to write a report.
 
+### User Stories
+
 ## Conceptuel Model 
 ![Conceptuel Model](Banking_conceptional.png)
 
