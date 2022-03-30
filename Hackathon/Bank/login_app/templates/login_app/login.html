@@ -1,4 +1,5 @@
 <!-- file: todo_project/login_app/templates/login_app/login.html -->
+{% extends "login_app/base.html" %}
 {% block content %}
 <!DOCTYPE html>
 <html lang="en">
@@ -11,8 +12,9 @@
    <hr />
       <form action="{% url 'login_app:login' %}" method="POST">
             {% csrf_token %}
-            <input type="text" name="user" placeholder="User Name">
-            <input type="password" name="password" placeholder="Password">
+            <p> Username: <input type="text" name="user" placeholder="User Name"> </p>
+            <br>
+            <p>Password: <input type="password" name="password" placeholder="Password"></p>
             <button>Login</button>
       </form>
    <hr />

@@ -1,5 +1,5 @@
+{% extends "BankApp/base.html" %}
 {% block content %}
-<hr />
 <h2>Update customer: {{customer.first_name}} {{customer.last_name}}</h2>
 <hr />
 <form action="../customerupdate/{{ customer.id }}" method="POST">
@@ -17,5 +17,5 @@
     <button>Update</button>
 </form>
     <hr />
-    
+
     {% endblock %}

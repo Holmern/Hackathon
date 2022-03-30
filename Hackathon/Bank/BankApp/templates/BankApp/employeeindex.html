@@ -1,8 +1,9 @@
+{% extends "BankApp/base.html" %}
 {% block content %}
-<form name="myform" method="GET" action="/bankapp/search/">
-<input type="text" name="search" placeholder="Search"/>
-</form>
 <h2>Costumers at {{ Bank.name }}</h2>
+<form name="myform" method="GET" action="/bankapp/search/">
+    Search for customers phonenumber: <input type="text" name="search" placeholder="Search"/>
+    </form>
 <hr />
     <ul>
     {% for customer in Customers  %}
