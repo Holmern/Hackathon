@@ -1,0 +1,19 @@
+{% block content %}
+<form name="myform" method="GET" action="/bankapp/search/">
+<input type="text" name="search" placeholder="Search"/>
+</form>
+<h2>Costumers at {{ Bank.name }}</h2>
+<hr />
+    <ul>
+    {% for customer in Customers  %}
+            <li>
+                <h3> <a href="details/{{ customer.id }}">{{customer.first_name}} {{ customer.last_name }}</a></h3>
+                {{ customer.phone }}
+                <hr />
+            </li>
+    {% empty %}
+    <h3>No results found.</h3>
+    {% endfor %}
+    </ul>
+
+{% endblock %}

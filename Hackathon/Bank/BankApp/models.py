@@ -1,10 +1,19 @@
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from datetime import date
 
 # Create your models here.
+class UID(models.Model):
+    @classmethod
+    @property
+    def uid(cls):
+        return cls.objects.create()
+
+    def __str__(self):
+        return f'{self.pk}'
+
 class Bank(models.Model):
 
     name = models.CharField(max_length=100)
@@ -33,17 +42,6 @@ class Customer(models.Model):
     def __str__(self):
         return '{} {} {} {} {} {} {}'.format(self.id, self.first_name, self.last_name, self.phone, self.email, self.rank, self.bank_id)
 
-'''
-class User(AbstractUser, models.Model):   
-    kind_of_user =  models.CharField(max_length=20)
-    user_fk = models.CharField(max_length=20)
-
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email', 'user_fk', 'kind_of_user']
-    
-    def __str__(self):
-        return "{}".format(self.username_fk)
-'''
 
 class Employee(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -75,40 +73,41 @@ class Account(models.Model):
         return '{} {} {} {} {}'.format(self.amount, self.name, self.account_type, self.customer_id, self.bank_id)
 
 
-class Transaction(models.Model):
+class Ledger(models.Model):
     description = models.CharField(max_length=40)
     amount = models.FloatField(null=True)
     t_type = models.CharField(max_length=40)
     account_id = models.IntegerField()
     timestamp = models.DateTimeField(auto_now_add=True)
     customer_id = models.ForeignKey(Customer, on_delete = models.CASCADE, default = None)
+    transaction = models.ForeignKey(UID, on_delete=models.PROTECT)
 
     def __str__(self):
-        return '{} {} {} {} {} {}'.format(self.description, self.amount, self.account_id, self.t_type, self.timestamp, self.customer_id)
+        return '{} {} {} {} {} {} {} {}'.format(self.description, self.amount, self.account_id, self.t_type, self.timestamp, self.customer_id, self.transaction)
 
 
 def CreateTransaction(description, from_acc, to_acc, amount, customer_id):
 
-    transaction = Transaction()
+    legder = Ledger()
     # id = uuid.uuid4()  # import
-    Transaction(
+    Legder(
         description=description,
         amount=float(amount),
         t_type="CREDIT",
         account_id=to_acc,
         #customer_id=customer_id
     )
-    transaction.customer_id = customer_id
-    transaction.save()
-    Transaction(
+    legder.customer_id = customer_id
+    legder.save()
+    Legder(
         description=description,
         amount=float(amount),
         t_type="DEBIT",
         account_id=from_acc,
         customer_id=customer_id
     )
-    transaction.customer_id = customer_id
-    transaction.save()
+    legder.customer_id = customer_id
+    legder.save()
 
 
 def CompleteTransaction(from_acc, to_acc, amount, fromnew, tonew, customer_id):
