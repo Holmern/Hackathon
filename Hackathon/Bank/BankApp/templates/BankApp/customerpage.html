@@ -1,0 +1,39 @@
+
+{% block content %}
+<hr />
+<h1>{{customer.first_name}} {{customer.last_name}} </h1>
+<hr />
+<h3> Contact info:</h3>
+<p>{{customer.phone}}</p>
+<p>{{customer.email}}</p>
+
+<h3>Customer rank: </h3>
+{{customer.rank}} <br>
+<hr />
+<h3>Accounts: </h3>
+    <ul>
+    {% for account in accounts  %}
+            <li>
+                {{ account.name }}
+                {{ account.amount }}
+            </li>
+    {% empty %}
+    <h3>No accounts</h3>
+    {% endfor %}
+    </ul>
+<hr />
+<h3>Options: </h3>
+<ul>
+    <li> <button><a href="../customerupdate/{{ customer.id }}">Update customer info</a></button>
+    <li><form action="../deactivate/{{ customer.id }}" method="POST">
+        {% csrf_token %}
+        <button>Deactivate customer user</button>
+        </form>
+    <li> Create account for customer
+    <li> Transfer money for customer
+    {% if not customer.rank == "Basis" %}
+    <li> Set up new Loan
+    {% endif %}
+</ul>
+
+{% endblock %}

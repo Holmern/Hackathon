@@ -1,0 +1,14 @@
+{% block content %}
+<hr />
+hej hej
+<hr />
+<form action="{% url 'BankApp:transaction_action' %}" method="POST">
+    {% csrf_token %}
+    <input type="text" name="description" placeholder="Write a description" />
+    <input type="number" name="amount" placeholder="amount" />
+    <input type="number" name="from_acc" placeholder="from account" />
+    <input type="number" name="to_acc" placeholder="to account" />
+    <input type="submit" value="Transfer"> </input>
+</form>
+<hr />
+{% endblock %}

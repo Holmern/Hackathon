@@ -1,0 +1,21 @@
+{% block content %}
+<hr />
+<h2>Update customer: {{customer.first_name}} {{customer.last_name}}</h2>
+<hr />
+<form action="../customerupdate/{{ customer.id }}" method="POST">
+    {% csrf_token %}
+    <h3>First Name: <input type="text" name="first_name" value="{{customer.first_name}}"></h3>
+    <h3>Last Name: <input type="text" name="last_name" value="{{customer.last_name}}"></h3>
+    <h3>Phone: <input type="text" name="phone" value="{{customer.phone}}"></h3>
+    <h3>Email: <input type="text" name="email" value="{{customer.email}}"></h3>
+    <h3>Choose Rank:
+    <select id="rank" name="rank" aria-placeholder="{{customer.rank}}">
+        <option value="Gold"{% if customer.rank == 'Gold' %} selected{% endif %}>Gold</option>
+        <option value="Silver"{% if customer.rank == 'Silver' %} selected{% endif %}>Silver</option>
+        <option value="Basis"{% if customer.rank == 'Basis' %} selected{% endif %}>Basis</option>
+    </select> </h3>
+    <button>Update</button>
+</form>
+    <hr />
+    
+    {% endblock %}
