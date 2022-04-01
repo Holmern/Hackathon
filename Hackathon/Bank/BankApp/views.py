@@ -5,33 +5,32 @@ from .models import Customer, Account, Bank, Employee, Ledger, CreateTransaction
 # from .calls import CreateTransaction, CompleteTransaction
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from rest_framework import generics, permissions
+from .models import Bank, Customer, Employee, Account, Ledger
+from .serializers import *
 
-@login_required
-def index(request):
+#@login_required
+class index(generics.ListCreateAPIView):
     # IF it is a customer who is logging in
-    if (Customer.objects.filter(user=request.user).first()) is not None:
-        Cus = Customer.objects.get(user=request.user).id
-        Accounts = Account.objects.filter(customer_id=Cus)
-        print(Accounts)
-        context = {
-            'Accounts': Accounts
-        }
-        return render(request, 'BankApp/index.html', context)
+    serializer_class = AccountSerializer
+    permissions_classes = (permissions.IsAuthenticated)
+    #queryset = Account.objects.all()
+    def get_queryset(self):
+        print(self.request.user, '------------------>>>>>>>>>>>')
+        if (Customer.objects.filter(user=self.request.user).first()) is not None:
+            Cus = Customer.objects.get(user=self.request.user).id
+            return Account.objects.filter(customer_id=Cus)
     
     # IF it is a employee who is logging in
-    elif (Employee.objects.filter(user=request.user).first()) is not None:
-            Bank = Employee.objects.get(user=request.user).bank_id
-            search = request.GET.get('search')
+    
+        elif (Employee.objects.filter(user=self.request.user).first()) is not None:
+            Bank = Employee.objects.get(user=self.request.user).bank_id
+            search = self.request.GET.get('search')
             print(search)
-            Bank = Employee.objects.get(user=request.user).bank_id
-            Customers = Customer.objects.filter(bank_id=Bank)
-            context = {
-                'Customers': Customers,
-                'Bank': Bank
-            }
-            return render(request, 'BankApp/employeeindex.html', context)
+            Bank = Employee.objects.get(user=self.request.user).bank_id
+            return Customer.objects.filter(bank_id=Bank)
 
-@login_required
+#@login_required
 def customerupdate(request, id):
     customer = Customer.objects.get(id=id)
     if request.method == "POST":

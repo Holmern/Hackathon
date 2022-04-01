@@ -19,5 +19,8 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('bankapp/', include('BankApp.urls')),
-    path('accounts/', include('login_app.urls')),
+    path('accounts/', include('rest_framework.urls')),
+    path('bankapp/dj-rest-auth/', include('dj_rest_auth.urls')),
+    path('bankap/dj-rest-auth/registration', include('dj_rest_auth.registration.urls')),
+    #path('api/v1', include('BankApp.urls'))
 ]
