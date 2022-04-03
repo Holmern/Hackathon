@@ -11,18 +11,16 @@ from .serializers import *
 
 #@login_required
 class index(generics.ListCreateAPIView):
-    # IF it is a customer who is logging in
     serializer_class = AccountSerializer
     permissions_classes = (permissions.IsAuthenticated)
-    #queryset = Account.objects.all()
+
     def get_queryset(self):
-        print(self.request.user, '------------------>>>>>>>>>>>')
+        # IF it is a customer who is logging in
         if (Customer.objects.filter(user=self.request.user).first()) is not None:
             Cus = Customer.objects.get(user=self.request.user).id
             return Account.objects.filter(customer_id=Cus)
     
     # IF it is a employee who is logging in
-    
         elif (Employee.objects.filter(user=self.request.user).first()) is not None:
             Bank = Employee.objects.get(user=self.request.user).bank_id
             search = self.request.GET.get('search')
@@ -77,14 +75,15 @@ def search(request):
     else:
         return render(request, 'login_app/login.html')
 
-# Define function to display the particular book
 
-@login_required
-def customer_page(request,id):
-    customer = Customer.objects.get(id=id)
-    Accounts = Account.objects.filter(customer_id=customer.id)
-    print(Accounts)
-    return render(request, 'BankApp/customerpage.html', {'customer': customer, 'accounts': Accounts})
+class customer_page(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer
+
+
+class account_details(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Account.objects.all()
+    serializer_class = AccountSerializer
 
 
 @login_required

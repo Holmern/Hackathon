@@ -7,10 +7,20 @@ class BankSerializer (serializers.ModelSerializer):
         fields = ('id', 'name', 'address',)
         model = Bank
 
-class CustomerSerializer (serializers.ModelSerializer):
+
+class AccountSerializer (serializers.ModelSerializer):
 
     class Meta:
-        fields = ('id', 'user', 'first_name', 'last_name', 'phone', 'email', 'rank', 'bank_id')
+        fields = ('id', 'amount', 'name', 'account_type', 'customer_id', 'bank_id')
+        model = Account
+
+
+class CustomerSerializer (serializers.ModelSerializer):
+    account_set = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    #account_set = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='accountdetails')
+
+    class Meta:
+        fields = ('id', 'user', 'first_name', 'last_name', 'phone', 'email', 'rank', 'bank_id', 'account_set')
         model = Customer
 
 class EmployeeSerializer (serializers.ModelSerializer):
@@ -18,12 +28,6 @@ class EmployeeSerializer (serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'user', 'first_name', 'last_name', 'phone', 'email', 'bank_id')
         model = Employee
-
-class AccountSerializer (serializers.ModelSerializer):
-
-    class Meta:
-        fields = ('id', 'amount', 'name', 'account_type', 'customer_id', 'bank_id')
-        model = Account
 
 class LedgerSerializer (serializers.ModelSerializer):
 
