@@ -32,5 +32,5 @@ class EmployeeSerializer (serializers.ModelSerializer):
 class LedgerSerializer (serializers.ModelSerializer):
 
     class Meta:
-        fields = ('id', 'description', 'amount', 't_type', 'amount_id', 'timestamp', 'customer_id', 'transaction')
+        fields = ('id', 'description', 'amount', 't_type', 'amount', 'timestamp', 'customer_id', 'transaction')
         model = Ledger
