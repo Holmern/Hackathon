@@ -1,16 +1,23 @@
 from django.urls import path
+from .views import index, dashboard, account_details, transaction_details, make_transfer
 from . import views
 
 
 app_name = "bank"
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    #path('', views.index, name='index'),
+    path('', index.as_view(), name='index'),
 
-    path('dashboard/', views.dashboard, name='dashboard'),
-    path('account_details/<int:pk>/', views.account_details, name='account_details'),
-    path('transaction_details/<int:transaction>/', views.transaction_details, name='transaction_details'),
-    path('make_transfer/', views.make_transfer, name='make_transfer'),
+    #path('dashboard/', views.dashboard, name='dashboard'),
+    path('dashboard/', dashboard.as_view(), name='dashboard'),
+
+    #path('account_details/<int:pk>/', views.account_details, name='account_details'),
+    path('account_details/<int:pk>/', account_details.as_view(), name='account_details'),
+    #path('transaction_details/<int:transaction>/', views.transaction_details, name='transaction_details'),
+    path('transaction_details/<int:transaction>/', transaction_details.as_view(), name='transaction_details'),
+    #path('make_transfer/', views.make_transfer, name='make_transfer'),
+    path('make_transfer/', make_transfer.as_view(), name='make_transfer'),
     path('make_loan/', views.make_loan, name='make_loan'),
 
     path('staff_dashboard/', views.staff_dashboard, name='staff_dashboard'),

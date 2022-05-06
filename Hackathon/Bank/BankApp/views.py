@@ -1,5 +1,6 @@
 from decimal import Decimal
 from secrets import token_urlsafe
+from urllib import response
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render, reverse, get_object_or_404
 from django.contrib.auth.models import User
@@ -9,9 +10,24 @@ from django.db import IntegrityError
 from .forms import TransferForm, UserForm, CustomerForm, NewUserForm, NewAccountForm
 from .models import Account, Ledger, Customer
 from .errors import InsufficientFunds
+from .serializers import *
+from rest_framework import generics, permissions
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 
+#@login_required
+class index(APIView):
 
-@login_required
+    permissions_classes = [permissions.IsAuthenticated, ]
+
+    def get(self, request):
+        if request.user.is_staff:
+            return redirect('/bankapp/staff_dashboard')
+        else:
+            return redirect('/bankapp/dashboard')
+
+'''@login_required
 def index(request):
     if request.user.is_staff:
         #return HttpResponseRedirect(reverse('BankApp:staff_dashboard'))
@@ -19,12 +35,26 @@ def index(request):
         return redirect('/bankapp/staff_dashboard')
     else:
         #return HttpResponseRedirect(reverse('BankApp:dashboard'))
-        return redirect('/bankapp/dashboard')
+        return redirect('/bankapp/dashboard')'''
 
 
 # Customer views
 
-@login_required
+#@login_required
+class dashboard(generics.ListAPIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'BankApp/dashboard.html'
+    serializer_class = AccountSerializer
+    permissions_classes = [permissions.IsAuthenticated, ]
+
+    def get(self, request):
+        assert not request.user.is_staff, 'Staff user routing customer view.'
+
+        queryset = request.user.customer.accounts
+
+        return Response({'accounts': queryset})
+
+'''@login_required
 def dashboard(request):
     assert not request.user.is_staff, 'Staff user routing customer view.'
 
@@ -32,10 +62,23 @@ def dashboard(request):
     context = {
         'accounts': accounts,
     }
-    return render(request, 'BankApp/dashboard.html', context)
+    return render(request, 'BankApp/dashboard.html', context)'''
+
+class account_details(generics.RetrieveDestroyAPIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'BankApp/account_details.html'
+    serializer_class = AccountSerializer
+    permissions_classes = [permissions.IsAuthenticated, ]
+    
+    def get(self, request, pk):
+        assert not request.user.is_staff, 'Staff user routing customer view.'
+
+        queryset = get_object_or_404(Account, user=request.user, pk=pk)
+
+        return Response({'account': queryset})
 
 
-@login_required
+'''@login_required
 def account_details(request, pk):
     assert not request.user.is_staff, 'Staff user routing customer view.'
 
@@ -43,10 +86,10 @@ def account_details(request, pk):
     context = {
         'account': account,
     }
-    return render(request, 'BankApp/account_details.html', context)
+    return render(request, 'BankApp/account_details.html', context)'''
 
 
-@login_required
+'''@login_required
 def transaction_details(request, transaction):
     movements = Ledger.objects.filter(transaction=transaction)
     if not request.user.is_staff:
@@ -55,10 +98,22 @@ def transaction_details(request, transaction):
     context = {
         'movements': movements,
     }
-    return render(request, 'BankApp/transaction_details.html', context)
+    return render(request, 'BankApp/transaction_details.html', context)'''
 
+class transaction_details(generics.RetrieveDestroyAPIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'BankApp/transaction_details.html'
+    serializer_class = AccountSerializer # <---
+    permissions_classes = [permissions.IsAuthenticated, ]
+    
+    def get(self, request, transaction):
+        queryset = Ledger.objects.filter(transaction=transaction)
+        if not request.user.is_staff:
+            if not queryset.filter(account__in=request.user.customer.accounts):
+                raise PermissionDenied('Customer is not part of the transaction.')
+        return Response({'movements': queryset})
 
-@login_required
+'''@login_required
 def make_transfer(request):
     assert not request.user.is_staff, 'Staff user routing customer view.'
 
@@ -86,7 +141,43 @@ def make_transfer(request):
     context = {
         'form': form,
     }
-    return render(request, 'BankApp/make_transfer.html', context)
+    return render(request, 'BankApp/make_transfer.html', context)'''
+
+class make_transfer(generics.ListCreateAPIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'BankApp/make_transfer.html'
+    serializer_class = TransferFormSerializer # <---
+    permissions_classes = [permissions.IsAuthenticated, ]
+    #form = TransferForm()
+    
+    def post(self, request):
+        assert not request.user.is_staff, 'Staff user routing customer view.'
+
+        form = TransferForm(request.POST)
+        form.fields['debit_account'].queryset = request.user.customer.accounts
+        if form.is_valid():
+            amount = form.cleaned_data['amount']
+            debit_account = Account.objects.get(pk=form.cleaned_data['debit_account'].pk)
+            debit_text = form.cleaned_data['debit_text']
+            credit_account = Account.objects.get(pk=form.cleaned_data['credit_account'])
+            credit_text = form.cleaned_data['credit_text']
+            try:
+                transfer = Ledger.transfer(amount, debit_account, debit_text, credit_account, credit_text)
+                return transaction_details(request, transfer)
+            except InsufficientFunds:
+                context = {
+                    'title': 'Transfer Error',
+                    'error': 'Insufficient funds for transfer.'
+                }                
+                return Response({'error': context})
+    
+    def get_queryset(self):
+        form = TransferForm()
+        form.fields['debit_account'].queryset = self.request.user.customer.accounts
+        context = {
+            'form': form,
+        }
+        return context
 
 
 @login_required

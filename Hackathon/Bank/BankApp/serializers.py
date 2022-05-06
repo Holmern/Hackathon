@@ -1,17 +1,18 @@
+from dataclasses import field
 from rest_framework import serializers
-from .models import Bank, Customer, Employee, Account, Ledger
+from .models import Customer, Account, Ledger
 
-class BankSerializer (serializers.ModelSerializer):
+
+'''class AccountSerializer (serializers.ModelSerializer):
 
     class Meta:
-        fields = ('id', 'name', 'address',)
-        model = Bank
-
+        fields = ('id', 'amount', 'name', 'account_type', 'customer_id', 'bank_id')
+        model = Account'''
 
 class AccountSerializer (serializers.ModelSerializer):
 
     class Meta:
-        fields = ('id', 'amount', 'name', 'account_type', 'customer_id', 'bank_id')
+        fields = ('user', 'name', 'movements', 'balance')
         model = Account
 
 
@@ -23,14 +24,14 @@ class CustomerSerializer (serializers.ModelSerializer):
         fields = ('id', 'user', 'first_name', 'last_name', 'phone', 'email', 'rank', 'bank_id', 'account_set')
         model = Customer
 
-class EmployeeSerializer (serializers.ModelSerializer):
-
-    class Meta:
-        fields = ('id', 'user', 'first_name', 'last_name', 'phone', 'email', 'bank_id')
-        model = Employee
-
 class LedgerSerializer (serializers.ModelSerializer):
 
     class Meta:
-        fields = ('id', 'description', 'amount', 't_type', 'amount', 'timestamp', 'customer_id', 'transaction')
+        fields = ('account', 'transaction','amount', 'timestamp', 'text')
         model = Ledger
+
+class TransferFormSerializer (serializers.Serializer):
+
+    class Meta:
+        fields = ('account', 'debit_account', 'debit_text', 'credit_account', 'credit_text')
+        
