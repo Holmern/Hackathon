@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from datetime import date
+import uuid
 
 # Create your models here.
 class UID(models.Model):
@@ -89,23 +90,28 @@ class Ledger(models.Model):
 def CreateTransaction(description, from_acc, to_acc, amount, customer_id):
 
     legder = Ledger()
+    id = uuid.uuid4().hex
     Legder(
+        id=id,
         description=description,
         amount=float(amount),
         t_type="CREDIT",
         account_id=to_acc,
         customer_id=customer_id
     )
-    legder.customer_id = customer_id
+    #legder.customer_id = customer_id
     legder.save()
+    legder = Ledger()
+    id = uuid.uuid4().hex
     Legder(
+        id=id,
         description=description,
         amount=float(amount),
         t_type="DEBIT",
         account_id=from_acc,
         customer_id=customer_id
     )
-    legder.customer_id = customer_id
+    #legder.customer_id = customer_id
     legder.save()
 
 

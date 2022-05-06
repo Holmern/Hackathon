@@ -1,6 +1,7 @@
 <!-- file: todo_project/todo_app/templates/todo_app/index.html -->
 
 {% block content %}
+
 <hr />
     <ul>
     {% for account in Accounts  %}
@@ -10,8 +11,11 @@
             </li>
     {% endfor %}
     </ul>
-    <a href="{% url 'BankApp:transfer' %}">Transfer Money</a>
 <hr />
-
+<form action="/" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit">
+</form>
 <hr />
 {% endblock %}
