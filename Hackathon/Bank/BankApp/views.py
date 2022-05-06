@@ -1,7 +1,7 @@
 from decimal import Decimal
 from secrets import token_urlsafe
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, reverse, get_object_or_404
+from django.shortcuts import redirect, render, reverse, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -14,9 +14,12 @@ from .errors import InsufficientFunds
 @login_required
 def index(request):
     if request.user.is_staff:
-        return HttpResponseRedirect(reverse('BankApp:staff_dashboard'))
+        #return HttpResponseRedirect(reverse('BankApp:staff_dashboard'))
+        #Command.handle(self)
+        return redirect('/bankapp/staff_dashboard')
     else:
-        return HttpResponseRedirect(reverse('BankApp:dashboard'))
+        #return HttpResponseRedirect(reverse('BankApp:dashboard'))
+        return redirect('/bankapp/dashboard')
 
 
 # Customer views
@@ -98,7 +101,8 @@ def make_loan(request):
         return render(request, 'BankApp/error.html', context)
     if request.method == 'POST':
         request.user.customer.make_loan(Decimal(request.POST['amount']), request.POST['name'])
-        return HttpResponseRedirect(reverse('BankApp:dashboard'))
+        #return HttpResponseRedirect(reverse('BankApp:dashboard'))
+        return redirect('/bankapp/dashboard')
     return render(request, 'BankApp/make_loan.html', {})
 
 
@@ -178,7 +182,8 @@ def staff_new_account_partial(request, user):
         new_account_form = NewAccountForm(request.POST)
         if new_account_form.is_valid():
             Account.objects.create(user=User.objects.get(pk=user), name=new_account_form.cleaned_data['name'])
-    return HttpResponseRedirect(reverse('BankApp:staff_customer_details', args=(user,)))
+    #return HttpResponseRedirect(reverse('BankApp:staff_customer_details', args=(user,)))
+    return redirect(f'/bankapp/staff_customer_details/{user}')
 
 
 @login_required
