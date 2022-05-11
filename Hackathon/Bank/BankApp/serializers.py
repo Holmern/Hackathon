@@ -17,11 +17,11 @@ class AccountSerializer (serializers.ModelSerializer):
 
 
 class CustomerSerializer (serializers.ModelSerializer):
-    account_set = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    #account_set = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     #account_set = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='accountdetails')
 
     class Meta:
-        fields = ('id', 'user', 'first_name', 'last_name', 'phone', 'email', 'rank', 'bank_id', 'account_set')
+        fields = ('user', 'rank', 'personal_id', 'phone', 'full_name', 'accounts', 'can_make_loan', 'default_account')
         model = Customer
 
 class LedgerSerializer (serializers.ModelSerializer):
