@@ -18,8 +18,8 @@ from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from django.db.models import Q
 
 class index(APIView):
-
     permissions_classes = [permissions.IsAuthenticated, ]
+    #permission_classes = (permissions.AllowAny,)
 
     def get(self, request):
         if request.user.is_staff:
@@ -27,6 +27,7 @@ class index(APIView):
         else:
             return redirect('/bankapp/dashboard')
 
+        
 '''@login_required
 def index(request):
     if request.user.is_staff:

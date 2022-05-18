@@ -15,8 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from .views import login
+from BankApp.views import index
 
 urlpatterns = [
+    path('', index.as_view(), name='index'),
+    path('login/', login.as_view(), name='login'),
     path('admin/', admin.site.urls),
     path('bankapp/', include('BankApp.urls')),
     path('accounts/', include('rest_framework.urls')),
