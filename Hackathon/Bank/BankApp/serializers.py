@@ -33,19 +33,19 @@ class AccountSerializer (serializers.ModelSerializer):
 
 
 class CustomerSerializer (serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField()
-    accounts = AccountSerializer(many=True )
+    #user = serializers.PrimaryKeyRelatedField(read_only=True)
+    accounts = AccountSerializer(many=True)
     #account_set = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     #account_set = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='accountdetails')
 
     class Meta:
-        fields = ('user', 'rank', 'personal_id', 'phone', 'full_name', 'accounts', 'can_make_loan', 'default_account')
+        fields = ('pk', 'user', 'rank', 'personal_id', 'phone', 'full_name', 'accounts', 'can_make_loan')
         model = Customer
 
 
 class TransferSerializer(serializers.Serializer):
     amount = serializers.DecimalField(label='Amount', max_digits=10, decimal_places=2)
-    debit_account = serializers.PrimaryKeyRelatedField(label='Debit Account', queryset=Account.objects.all())
+    debit_account = serializers.PrimaryKeyRelatedField(label='Debit Account', queryset=Account.objects.none())
     debit_text = serializers.CharField(label='Debit Account Text', max_length=25)
     credit_account = serializers.IntegerField(label='Credit Account Number')
     credit_text = serializers.CharField(label='Credit Account Text', max_length=25)
@@ -60,3 +60,10 @@ class LoanSerializer(serializers.Serializer):
     
     class Meta():
         fields = ('name', 'amount')
+
+
+class SearchSerializer(serializers.Serializer):
+    search_term = serializers.CharField(label='Search', max_length=25)
+    
+    class Meta():
+        fields = ('search_term')
