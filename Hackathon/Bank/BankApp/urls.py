@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import index, dashboard, account_details, transaction_details, make_transfer, staff_dashboard, staff_search_partial, staff_customer_details, staff_account_list_partial, staff_account_details, error, make_loan
+from .views import index, dashboard, account_details, transaction_details, make_transfer, staff_dashboard, staff_customer_details, staff_account_list_partial, staff_account_details, error, make_loan
 from . import views
 
 
@@ -24,8 +24,6 @@ urlpatterns = [
 
     #path('staff_dashboard/', views.staff_dashboard, name='staff_dashboard'),
     path('staff_dashboard/', staff_dashboard.as_view(), name='staff_dashboard'),
-    #path('staff_search_partial/', views.staff_search_partial, name='staff_search_partial'),
-    path('staff_search_partial/', staff_search_partial.as_view(), name='staff_search_partial'),
     path('staff_customer_details/<int:pk>/', views.staff_customer_details, name='staff_customer_details'),
     #path('staff_customer_details/<int:pk>/', staff_customer_details.as_view(), name='staff_customer_details'),
     path('staff_account_list_partial/<int:pk>/', views.staff_account_list_partial, name='staff_account_list_partial'),

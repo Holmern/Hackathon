@@ -283,59 +283,16 @@ def staff_dashboard(request):
 
     return render(request, 'BankApp/staff_dashboard.html')'''
 
+# REST - DONE
 class staff_dashboard(generics.ListAPIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'BankApp/staff_dashboard.html'
-    serializer_class = AccountSerializer
+    serializer_class = SearchSerializer
     permissions_classes = [permissions.IsAuthenticated, ]
 
     def get(self, request):
         assert request.user.is_staff, 'Customer user routing staff view.'
         return Response({})
-
-
-'''@login_required
-def staff_search_partial(request):
-    assert request.user.is_staff, 'Customer user routing staff view.'
-
-    search_term = request.POST['search_term']
-    customers = Customer.search(search_term)
-    context = {
-        'customers': customers,
-    }
-    return render(request, 'BankApp/staff_search_partial.html', context)'''
-
-'''class staff_search_partial(generics.ListAPIView):
-    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
-    template_name = 'BankApp/staff_search_partial.html'
-    serializer_class = CustomerSerializer
-    permissions_classes = [permissions.IsAuthenticated, ]
-    
-    def post(self, request):
-        assert request.user.is_staff, 'Customer user routing staff view.'
-
-        search_term = request.POST['search_term']
-        print(type(search_term))
-        customers = Customer.objects.filter(
-                Q(user__username__contains=search_term)   |
-                Q(user__first_name__contains=search_term) |
-                Q(user__last_name__contains=search_term)  |
-                Q(user__email__contains=search_term)      |
-                Q(personal_id__contains=search_term)      |
-                Q(phone__contains=search_term)
-            )[:15]
-
-        serializer = CustomerSerializer(customers, many=True)
-        #   raise TypeError(f'Object of type {o.__class__.__name__} '
-        #   TypeError: Object of type ListSerializer is not JSON serializable
-        return Response({'customers': serializer})'''
-
-
-class staff_search_partial(generics.ListAPIView):
-    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
-    template_name = 'BankApp/staff_search_partial.html'
-    serializer_class = CustomerSerializer
-    permissions_classes = [permissions.IsAuthenticated, ]
 
     def post(self, request):
         assert request.user.is_staff, 'Customer user routing staff view.'
@@ -343,15 +300,15 @@ class staff_search_partial(generics.ListAPIView):
         search_term = request.POST['search_term']
         customers = Customer.objects.filter(
             Q(user__username__contains=search_term)   |
-            Q(user__firstname__contains=search_term) |
-            Q(user__lastname__contains=search_term)  |
+            Q(user__first_name__contains=search_term) |
+            Q(user__last_name__contains=search_term)  |
             Q(user__email__contains=search_term)      |
             Q(personal_id__contains=search_term)      |
             Q(phone__contains=search_term)
         )[:15]
         customers_data = CustomerSerializer(customers, many=True).data
+        print(customers_data)
         return Response({'customers': customers_data})
-    
 
 @login_required
 def staff_customer_details(request, pk):
