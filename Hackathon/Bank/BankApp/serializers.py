@@ -1,4 +1,7 @@
+from cProfile import label
 from dataclasses import field
+from locale import currency
+from unittest.util import _MAX_LENGTH
 from rest_framework import serializers
 from .models import Customer, Account, Ledger, UID
 from drf_braces.serializers.form_serializer import FormSerializer
@@ -60,3 +63,8 @@ class LoanSerializer(serializers.Serializer):
     
     class Meta():
         fields = ('name', 'amount')
+
+class ExchangeSerializer(serializers.Serializer):
+    from_currency = serializers.Char(label='From Currency', max_lenght=3)
+    amount = serializers.DecimalField(label='Amount', max_digits=9, decimal_places=2)
+    to_currency = serializers.Char('To Currency', max_lenght=3)
