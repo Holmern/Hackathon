@@ -30,7 +30,7 @@
                     {% if user.is_superuser %}
                     <li><a href="{% url 'admin:index' %}">Django Admin</a></li>
                     {% endif %}
-                    <li><a href="{% url 'rest_logout' %}">Log out</a></li>
+                    <li><a href="{% url 'accounts:logout' %}">Log out</a></li>
                 </ul>
             </li>
             {% if user.is_staff %}
