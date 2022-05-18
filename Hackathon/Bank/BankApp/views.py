@@ -144,12 +144,12 @@ def make_transfer(request):
     }
     return render(request, 'BankApp/make_transfer.html', context)'''
 
+# Cannot assign "<bound method ? of <class 'BankApp.models.UID'>>": "Ledger.transaction" must be a "UID" instance.
 class make_transfer(generics.ListCreateAPIView):
-    #renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
-    #template_name = 'BankApp/make_transfer.html'
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'BankApp/make_transfer.html'
     serializer_class = TransferSerializer
     permissions_classes = [permissions.IsAuthenticated, ]
-    #queryset = Account.objects.all()
 
     def post(self, request):
         data = request.POST
@@ -161,6 +161,7 @@ class make_transfer(generics.ListCreateAPIView):
             credit_account = Account.objects.get(pk=request.POST['credit_account'])
             credit_text = request.POST['credit_text']
             try:
+                #transfer = Ledger.transfer(int(amount), debit_account, debit_text, credit_account, credit_text)
                 if debit_account.balance >= float(amount):
                 #uid = UID.uid
                 #cls(amount=-amount, transaction=uid, account=debit_account, text=debit_text).save()
@@ -229,7 +230,35 @@ class error(generics.ListAPIView):
         
         return Response(error)
 
+# Cannot assign "<bound method ? of <class 'BankApp.models.UID'>>": "Ledger.transaction" must be a "UID" instance.
+class make_loan(generics.CreateAPIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'BankApp/make_loan.html'
+    serializer_class = LoanSerializer
+    permissions_classes = [permissions.IsAuthenticated, ]
 
+    def post(self, request):
+        assert not request.user.is_staff, 'Staff user routing customer view.'
+        
+        serializer = LoanSerializer(data=request.data)
+        
+        if not request.user.customer.can_make_loan:
+            context = {
+                'title': 'Create Loan Error',
+                'error': 'Loan could not be completed.'
+            }
+            return redirect('/bankapp/dashboard') # clean up - return error
+        
+        if serializer.is_valid():
+            request.user.customer.make_loan(Decimal(request.POST['amount']), request.POST['name'])
+            return redirect('/bankapp/dashboard')
+
+    def get(self, request):
+        assert not request.user.is_staff, 'Staff user routing customer view.'
+
+        return Response({})
+
+'''
 @login_required
 def make_loan(request):
     assert not request.user.is_staff, 'Staff user routing customer view.'
@@ -244,7 +273,7 @@ def make_loan(request):
         request.user.customer.make_loan(Decimal(request.POST['amount']), request.POST['name'])
         return redirect('/bankapp/dashboard')
     return render(request, 'BankApp/make_loan.html', {})
-
+'''
 
 # Staff views
 

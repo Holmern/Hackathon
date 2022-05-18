@@ -33,6 +33,8 @@ class AccountSerializer (serializers.ModelSerializer):
 
 
 class CustomerSerializer (serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField()
+    accounts = AccountSerializer(many=True )
     #account_set = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     #account_set = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='accountdetails')
 
@@ -50,3 +52,11 @@ class TransferSerializer(serializers.Serializer):
 
     class Meta():
         fields = ('amount', 'debit_account', 'debit_text', 'credit_account', 'credit_text')
+
+
+class LoanSerializer(serializers.Serializer):
+    name = serializers.CharField(label='Name for Loan', max_length=25)
+    amount = serializers.DecimalField(label='Amount', max_digits=10, decimal_places=2)
+    
+    class Meta():
+        fields = ('name', 'amount')
