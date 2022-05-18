@@ -10,11 +10,4 @@ class login(APIView):
         if request.user.is_authenticated:
             return redirect('/bankapp/')
         else:    
-            return redirect('/accounts/login')
-
-class logout(APIView):
-    #permissions_classes = [permissions.IsAuthenticated, ]
-    permission_classes = (permissions.AllowAny,)
-
-    def get(self, request):
-        return redirect('/accounts/logout')
+            return redirect('/mfa/')
