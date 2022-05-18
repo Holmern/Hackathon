@@ -1,11 +1,31 @@
 {% extends "base.html" %}
+{% load rest_framework %}
 
 {% block main %}
 <form action="{% url 'bank:make_transfer' %}" method="post">
     {% csrf_token %}
     <fieldset>
-        {{ form }}
-    <button>Log In</button>
+    <label>
+    Amount
+    <input name="amount" type="number" />
+    </label>
+    <label>
+    Debit account
+    <input name="debit_account" type="text" />
+    </label>
+    <label>
+    Debit text
+    <input name="debit_text" type="text" />
+    </label>
+    <label>
+    Credit account
+    <input name="credit_account" type="text" />
+    </label>
+    <label>
+    Credit text
+    <input name="credit_text" type="text" />
+    </label>
+    <button> Make transfer </button>
     </fieldset>
 </form>
 {% endblock main %}

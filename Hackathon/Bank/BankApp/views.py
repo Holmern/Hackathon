@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db import IntegrityError
 from .forms import TransferForm, UserForm, CustomerForm, NewUserForm, NewAccountForm
-from .models import Account, Ledger, Customer
+from .models import Account, Ledger, Customer, UID
 from .errors import InsufficientFunds
 from .serializers import *
 from rest_framework import generics, permissions
@@ -17,10 +17,9 @@ from rest_framework.response import Response
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from django.db.models import Q
 
+#REST - DONE
 class index(APIView):
-
     permissions_classes = [permissions.IsAuthenticated, ]
-
     def get(self, request):
         if request.user.is_staff:
             return redirect('/bankapp/staff_dashboard')
@@ -37,8 +36,8 @@ def index(request):
         #return HttpResponseRedirect(reverse('BankApp:dashboard'))
         return redirect('/bankapp/dashboard')'''
 
-
-# Customer views
+# REST - DONE
+# Customer views 
 class dashboard(generics.ListAPIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'BankApp/dashboard.html'
@@ -49,8 +48,8 @@ class dashboard(generics.ListAPIView):
         assert not request.user.is_staff, 'Staff user routing customer view.'
 
         queryset = request.user.customer.accounts
-
-        return Response({'accounts': queryset})
+        account_data = AccountSerializer(queryset, many=True).data
+        return Response({'accounts': account_data})
 
 '''@login_required
 def dashboard(request):
@@ -62,6 +61,7 @@ def dashboard(request):
     }
     return render(request, 'BankApp/dashboard.html', context)'''
 
+# REST - DONE
 class account_details(generics.RetrieveDestroyAPIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'BankApp/account_details.html'
@@ -71,9 +71,10 @@ class account_details(generics.RetrieveDestroyAPIView):
     def get(self, request, pk):
         assert not request.user.is_staff, 'Staff user routing customer view.'
 
-        queryset = get_object_or_404(Account, user=request.user, pk=pk)
-
-        return Response({'account': queryset})
+        #queryset = get_object_or_404(Account, user=request.user, pk=pk)
+        queryset = Account.objects.filter(user=request.user, pk=pk)
+        account_data = AccountSerializer(queryset, many=True).data
+        return Response({'account': account_data})
 
 
 '''@login_required
@@ -98,6 +99,7 @@ def transaction_details(request, transaction):
     }
     return render(request, 'BankApp/transaction_details.html', context)'''
 
+# REST - DONE
 class transaction_details(generics.RetrieveDestroyAPIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'BankApp/transaction_details.html'
@@ -109,7 +111,8 @@ class transaction_details(generics.RetrieveDestroyAPIView):
         if not request.user.is_staff:
             if not queryset.filter(account__in=request.user.customer.accounts):
                 raise PermissionDenied('Customer is not part of the transaction.')
-        return Response({'movements': queryset})
+        movements_data = LedgerSerializer(queryset, many=True).data
+        return Response({'movements': movements_data})
 
 '''@login_required
 def make_transfer(request):
@@ -141,6 +144,50 @@ def make_transfer(request):
     }
     return render(request, 'BankApp/make_transfer.html', context)'''
 
+class make_transfer(generics.ListCreateAPIView):
+    #renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    #template_name = 'BankApp/make_transfer.html'
+    serializer_class = TransferSerializer
+    permissions_classes = [permissions.IsAuthenticated, ]
+    #queryset = Account.objects.all()
+
+    def post(self, request):
+        data = request.POST
+        serializer = TransferSerializer(data=request.data)
+        if serializer.is_valid():
+            amount = request.POST['amount']
+            debit_account = Account.objects.get(pk=request.POST['debit_account'])
+            debit_text = request.POST['debit_text']
+            credit_account = Account.objects.get(pk=request.POST['credit_account'])
+            credit_text = request.POST['credit_text']
+            try:
+                if debit_account.balance >= float(amount):
+                #uid = UID.uid
+                #cls(amount=-amount, transaction=uid, account=debit_account, text=debit_text).save()
+                #cls(amount=amount, transaction=uid, account=credit_account, text=credit_text).save()
+                    Ledger.objects.create(amount=float(amount), transaction=UID.uid, account=debit_account, text=debit_text).save()
+                    Ledger.objects.create(amount=float(amount), transaction=UID.uid, account=credit_account, text=credit_text).save()
+                else:
+                    raise InsufficientFunds
+
+
+                transfer = Ledger.transfer(int(amount), debit_account, debit_text, credit_account, credit_text)
+                return redirect(f'/bankapp/transaction_details/{transfer}')
+            except InsufficientFunds:
+                context = {
+                    'title': 'Transfer Error',
+                    'error': 'Insufficient funds for transfer.'
+                }                
+                return Response({'error':context}) #<-- Dette driller øv.. Ingen error info kommer tilbage..
+        
+    def get(self, request):
+        assert not request.user.is_staff, 'Staff user routing customer view.'
+
+        queryset = request.user.customer.accounts
+        account_data = AccountSerializer(queryset, many=True).data
+        return Response({'accounts': account_data})
+
+'''
 class make_transfer(generics.ListCreateAPIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'BankApp/make_transfer.html'
@@ -175,6 +222,7 @@ class make_transfer(generics.ListCreateAPIView):
             'form': form,
         }
         return Response(context)
+'''
 
 class error(generics.ListAPIView):
     def get(self, request, error):
@@ -253,24 +301,27 @@ def staff_search_partial(request):
         #   TypeError: Object of type ListSerializer is not JSON serializable
         return Response({'customers': serializer})'''
 
+
 class staff_search_partial(generics.ListAPIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'BankApp/staff_search_partial.html'
     serializer_class = CustomerSerializer
     permissions_classes = [permissions.IsAuthenticated, ]
 
-    def get_queryset(self):
-        assert self.request.user.is_staff, 'Customer user routing staff view.'
+    def post(self, request):
+        assert request.user.is_staff, 'Customer user routing staff view.'
 
-        search_term = self.request.GET.get('search_term')
-        print(type(search_term))
+        search_term = request.POST['search_term']
         customers = Customer.objects.filter(
-                Q(user__first_name__icontains=search_term)      |
-                Q(personal_id__icontains=search_term)      |
-                Q(phone__icontains=search_term)
-            )[:15]
-
-        return customers
+            Q(user__username__contains=search_term)   |
+            Q(user__firstname__contains=search_term) |
+            Q(user__lastname__contains=search_term)  |
+            Q(user__email__contains=search_term)      |
+            Q(personal_id__contains=search_term)      |
+            Q(phone__contains=search_term)
+        )[:15]
+        customers_data = CustomerSerializer(customers, many=True).data
+        return Response({'customers': customers_data})
     
 
 @login_required
