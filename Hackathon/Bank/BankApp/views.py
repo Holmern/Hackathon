@@ -20,12 +20,15 @@ from django.db.models import Q
 #REST - DONE
 class index(APIView):
     permissions_classes = [permissions.IsAuthenticated, ]
+    #permission_classes = (permissions.AllowAny,)
+
     def get(self, request):
         if request.user.is_staff:
             return redirect('/bankapp/staff_dashboard')
         else:
             return redirect('/bankapp/dashboard')
 
+        
 '''@login_required
 def index(request):
     if request.user.is_staff:
