@@ -17,7 +17,6 @@ from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import path, include
 from .views import login
-#from dj_rest_auth.views import LoginView, LogoutView
 from django.contrib.auth.views import LoginView
 from django_otp.forms import OTPAuthenticationForm
 

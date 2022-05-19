@@ -11,7 +11,7 @@
         {% endif %}
         <div class="form-row"> {{ form.otp_token.errors }}{{ form.otp_token.label_tag }}{{ form.otp_token }} </div>
         <div class="submit-row">
-            <input type="submit" value="Log in"/>
+            <input type="submit"  value="Log in"/>
             {% if form.get_user %}<input type="submit" name="otp_challenge" value="Get Challenge" />{% endif %}
         </div>
     </form>
