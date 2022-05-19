@@ -20,22 +20,11 @@ from .views import login
 #from dj_rest_auth.views import LoginView, LogoutView
 from django.contrib.auth.views import LoginView
 from django_otp.forms import OTPAuthenticationForm
-from django_otp.admin import OTPAdminSite
-from django.contrib.auth.models import User
-from django_otp.plugins.otp_totp.models import TOTPDevice
-
-class OTPAdmin(OTPAdminSite):
-    pass
-
-admin_site = OTPAdmin(name='OTPAdmin')
-admin_site.register(User)
-admin_site.register(TOTPDevice)
 
 urlpatterns = [
-    path('mfa/', LoginView.as_view(authentication_form=OTPAuthenticationForm)),
     path('', login.as_view(), name='index'),
+    path('mfa/', LoginView.as_view(authentication_form=OTPAuthenticationForm)),
     path('admin/', admin.site.urls),
-    path('tw_admin/', admin_site.urls),
     path('bankapp/', include('BankApp.urls')),
     path('user/', include('rest_framework.urls', namespace='user')),
     path('bankapp/dj-rest-auth/', include('dj_rest_auth.urls')), 
