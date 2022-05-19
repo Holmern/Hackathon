@@ -6,12 +6,16 @@ from rest_framework import serializers
 from .models import Customer, Account, Ledger, UID
 from drf_braces.serializers.form_serializer import FormSerializer
 from .forms import TransferForm
+from django.contrib.auth.models import User
 
-'''class AccountSerializer (serializers.ModelSerializer):
 
+class CurrentUserSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ('id', 'amount', 'name', 'account_type', 'customer_id', 'bank_id')
-        model = Account'''
+        model = User
+        #fields = ('username', 'email', 'id', 'first_name', 'last_name')
+        fields = '__all__'
+
+
 class uidserializer (serializers.ModelSerializer):
     class Meta:
         model = UID
@@ -26,7 +30,6 @@ class LedgerSerializer (serializers.ModelSerializer):
         fields = '__all__'
 
 
-
 class AccountSerializer (serializers.ModelSerializer):
     movements = LedgerSerializer(many=True)
 
@@ -36,14 +39,13 @@ class AccountSerializer (serializers.ModelSerializer):
 
 
 class CustomerSerializer (serializers.ModelSerializer):
-    #user = serializers.PrimaryKeyRelatedField(read_only=True)
-    accounts = AccountSerializer(many=True)
-    #account_set = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    #account_set = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='accountdetails')
+    user = CurrentUserSerializer(read_only=True)
+    accounts = AccountSerializer(many=True, read_only=True)
 
     class Meta:
-        fields = ('pk', 'user', 'rank', 'personal_id', 'phone', 'full_name', 'accounts', 'can_make_loan')
+        fields = ('pk', 'user', 'rank', 'personal_id', 'phone', 'accounts', 'can_make_loan')
         model = Customer
+        #fields = '__all__'
 
 
 class TransferSerializer(serializers.Serializer):
@@ -53,7 +55,7 @@ class TransferSerializer(serializers.Serializer):
     credit_account = serializers.IntegerField(label='Credit Account Number')
     credit_text = serializers.CharField(label='Credit Account Text', max_length=25)
 
-    class Meta():
+    class Meta:
         fields = ('amount', 'debit_account', 'debit_text', 'credit_account', 'credit_text')
 
 
@@ -61,17 +63,56 @@ class LoanSerializer(serializers.Serializer):
     name = serializers.CharField(label='Name for Loan', max_length=25)
     amount = serializers.DecimalField(label='Amount', max_digits=10, decimal_places=2)
     
-    class Meta():
+    class Meta:
         fields = ('name', 'amount')
 
 class ExchangeSerializer(serializers.Serializer):
-    from_currency = serializers.Char(label='From Currency', max_lenght=3)
+    from_currency = serializers.CharField(label='From Currency', max_length=3)
     amount = serializers.DecimalField(label='Amount', max_digits=9, decimal_places=2)
-    to_currency = serializers.Char('To Currency', max_lenght=3)
+    to_currency = serializers.CharField(label='To Currency', max_length=3)
 
 
 class SearchSerializer(serializers.Serializer):
     search_term = serializers.CharField(label='Search', max_length=25)
     
-    class Meta():
+    class Meta:
         fields = ('search_term')
+
+
+class NewAccountSerializer(serializers.Serializer):
+    search_term = serializers.CharField(label='New Account name', max_length=25)
+    
+    class Meta:
+        fields = ('new_account')
+
+
+class NewAccountSerializer(serializers.Serializer):
+    username = serializers.CharField(label='New Account name', max_length=25)
+    first_name = serializers.CharField(label='New Account name', max_length=25)
+    last_name = serializers.CharField(label='New Account name', max_length=25)
+    email = serializers.CharField(label='New Account name', max_length=25)
+    
+    class Meta:
+        fields = ('username', 'first_name', 'last_name', 'email')
+
+class NewUserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email')
+
+    def clean(self):
+        super().clean()
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username):
+            self._errors['username'] = self.error_class(['Username already exists.'])
+        return self.cleaned_data
+
+
+class UserForm(forms.ModelForm):
+    username = forms.CharField(label='Username', disabled=True)
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email')
+
+

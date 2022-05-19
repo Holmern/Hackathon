@@ -66,7 +66,7 @@ class Customer(models.Model):
         )
 
     def __str__(self):
-        return f'{self.personal_id}: {self.full_name}'
+        return f'{self.personal_id}: {self.full_name} {self.accounts}'
 
 
 class Account(models.Model):

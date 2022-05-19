@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import index, dashboard, account_details, transaction_details, make_transfer, staff_dashboard, staff_customer_details, staff_account_list_partial, staff_account_details, error, make_loan
+from .views import index, dashboard, account_details, transaction_details, make_transfer, staff_dashboard, staff_customer_details, staff_account_list_partial, staff_account_details, make_loan, staff_new_account_partial
 from . import views
 
 
@@ -26,12 +26,11 @@ urlpatterns = [
     path('staff_dashboard/', staff_dashboard.as_view(), name='staff_dashboard'),
     path('staff_customer_details/<int:pk>/', views.staff_customer_details, name='staff_customer_details'),
     #path('staff_customer_details/<int:pk>/', staff_customer_details.as_view(), name='staff_customer_details'),
-    path('staff_account_list_partial/<int:pk>/', views.staff_account_list_partial, name='staff_account_list_partial'),
-    #path('staff_account_list_partial/<int:pk>/', staff_account_list_partial.as_view(), name='staff_account_list_partial'),
+    #path('staff_account_list_partial/<int:pk>/', views.staff_account_list_partial, name='staff_account_list_partial'),
+    path('staff_account_list_partial/<int:pk>/', staff_account_list_partial.as_view(), name='staff_account_list_partial'),
     #path('staff_account_details/<int:pk>/', views.staff_account_details, name='staff_account_details'),
     path('staff_account_details/<int:pk>/', staff_account_details.as_view(), name='staff_account_details'),
-    path('staff_new_account_partial/<int:user>/', views.staff_new_account_partial, name='staff_new_account_partial'),
+    #path('staff_new_account_partial/<int:user>/', views.staff_new_account_partial, name='staff_new_account_partial'),
+    path('staff_new_account_partial/<int:user>/', staff_new_account_partial.as_view(), name='staff_new_account_partial'),
     path('staff_new_customer/', views.staff_new_customer, name='staff_new_customer'),
-
-    path('error/', error.as_view(), name='error')
 ]
