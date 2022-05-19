@@ -14,17 +14,19 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.shortcuts import redirect
 from django.urls import path, include
-from .views import login, logout
-from BankApp.views import index
+from .views import login
+#from dj_rest_auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView
+from django_otp.forms import OTPAuthenticationForm
 
 urlpatterns = [
     path('', login.as_view(), name='index'),
-    #path('login/', login.as_view(), name='login'),
+    path('mfa/', LoginView.as_view(authentication_form=OTPAuthenticationForm)),
     path('admin/', admin.site.urls),
     path('bankapp/', include('BankApp.urls')),
-    path('accounts/', include('rest_framework.urls', namespace='accounts')),
-    path('bankapp/dj-rest-auth/', include('dj_rest_auth.urls')),
+    path('user/', include('rest_framework.urls', namespace='user')),
+    path('bankapp/dj-rest-auth/', include('dj_rest_auth.urls')), 
     path('bankapp/dj-rest-auth/registration', include('dj_rest_auth.registration.urls')),
-    #path('api/v1', include('BankApp.urls'))
 ]

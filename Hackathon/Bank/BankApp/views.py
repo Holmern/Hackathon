@@ -16,6 +16,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from django.db.models import Q
+from django_otp import devices_for_user
+from django_otp.plugins.otp_totp.models import TOTPDevice
 
 #REST - DONE
 class index(APIView):
@@ -418,7 +420,7 @@ def staff_new_customer(request):
             first_name  = new_user_form.cleaned_data['first_name']
             last_name   = new_user_form.cleaned_data['last_name']
             email       = new_user_form.cleaned_data['email']
-            password    = token_urlsafe(16)
+            password    = token_urlsafe(8)
             rank        = customer_form.cleaned_data['rank']
             personal_id = customer_form.cleaned_data['personal_id']
             phone       = customer_form.cleaned_data['phone']
@@ -432,6 +434,7 @@ def staff_new_customer(request):
                 )
                 print(f'********** Username: {username} -- Password: {password}')
                 Customer.objects.create(user=user, rank=rank, personal_id=personal_id, phone=phone)
+                create_OTP(user)
                 return staff_customer_details(request, user.pk)
             except IntegrityError:
                 context = {
@@ -447,3 +450,21 @@ def staff_new_customer(request):
         'customer_form': customer_form,
     }
     return render(request, 'BankApp/staff_new_customer.html', context)
+
+# Func for 2-way-Auth
+def get_user_totp_device(user, confirmed=None):
+    devices = devices_for_user(user, confirmed=confirmed)
+    for device in devices:
+        if isinstance(device, TOTPDevice):
+            return device
+# Func for 2-way-Auth
+def create_OTP(user):
+    device = get_user_totp_device(user)
+    if not device:
+        device = user.totpdevice_set.create(confirmed=True)
+    url = device.config_url
+    #print(url)
+    url = url.split('=')
+    qr_code_url = url[1].replace('&algorithm', '')
+    print(f'********* QR-Code: {qr_code_url} *********')
+    return qr_code_url

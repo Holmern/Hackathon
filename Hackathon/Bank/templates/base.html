@@ -6,18 +6,18 @@
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'holiday.css' %}" media="screen" />
     <link rel="stylesheet" type="text/css" href="{% static 'custom.css' %}" media="screen" />
-    <title>KEA Bank</title>
+    <title>3WHS INC </title>
 </head>
 <body>
 
     {% load l10n %}
 
     <header>
-        <h1>KEA Bank</h1>
+        <h1>3WHS INC</h1>
         {% if user.is_staff %}
-        <h2>Bank Staff Portal</h2>
+        <h2>3WHS INC Staff Portal</h2>
         {% else %}
-        <h2>Bank Customer Portal</h2>
+        <h2>3WHS INC Customer Portal</h2>
         {% endif %}
     </header>
 
@@ -30,7 +30,7 @@
                     {% if user.is_superuser %}
                     <li><a href="{% url 'admin:index' %}">Django Admin</a></li>
                     {% endif %}
-                    <li><a href="{% url 'accounts:logout' %}">Log out</a></li>
+                    <li><a href="{% url 'user:logout' %}">Log out</a></li>
                 </ul>
             </li>
             {% if user.is_staff %}
