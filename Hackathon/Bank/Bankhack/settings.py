@@ -49,6 +49,10 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'dj_rest_auth.registration',
+    'django_otp',
+    'django_otp.plugins.otp_totp',
+    'django_otp.plugins.otp_hotp',
+    'django_otp.plugins.otp_static'
 
 ]
 
@@ -70,6 +74,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_otp.middleware.OTPMiddleware',
 ]
 
 ROOT_URLCONF = 'Bankhack.urls'
@@ -131,7 +136,7 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Europe/Copenhagen'
 
 USE_I18N = True
-
+USE_L10N = True
 USE_TZ = True
 
 
