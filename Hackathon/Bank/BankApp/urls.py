@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import index, dashboard, account_details, transaction_details, make_transfer, staff_dashboard, staff_customer_details, staff_account_list_partial, staff_account_details, error, make_loan
+from .views import index, dashboard, account_details, transaction_details, make_transfer, staff_dashboard, staff_customer_details, staff_account_list_partial, staff_account_details, error, make_loan, convert_currency
 from . import views
 
 
@@ -32,6 +32,7 @@ urlpatterns = [
     path('staff_account_details/<int:pk>/', staff_account_details.as_view(), name='staff_account_details'),
     path('staff_new_account_partial/<int:user>/', views.staff_new_account_partial, name='staff_new_account_partial'),
     path('staff_new_customer/', views.staff_new_customer, name='staff_new_customer'),
+    path('convert_currency/', convert_currency.as_view(), name='convert_currency'),
 
     path('error/', error.as_view(), name='error')
 ]

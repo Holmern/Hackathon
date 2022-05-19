@@ -4,7 +4,6 @@ from locale import currency
 from unittest.util import _MAX_LENGTH
 from rest_framework import serializers
 from .models import Customer, Account, Ledger, UID
-from drf_braces.serializers.form_serializer import FormSerializer
 from .forms import TransferForm
 
 '''class AccountSerializer (serializers.ModelSerializer):
@@ -64,11 +63,21 @@ class LoanSerializer(serializers.Serializer):
     class Meta():
         fields = ('name', 'amount')
 
-class ExchangeSerializer(serializers.Serializer):
-    from_currency = serializers.Char(label='From Currency', max_lenght=3)
+class ConvertSerializer(serializers.Serializer):
+    from_currency = serializers.CharField(label='From Currency', max_length=3)
     amount = serializers.DecimalField(label='Amount', max_digits=9, decimal_places=2)
-    to_currency = serializers.Char('To Currency', max_lenght=3)
+    to_currency = serializers.CharField(label='To Currency', max_length=3)
+    
+    class Meta():
+        fields = ('from_currency')
+        fields = ('amount')
+        fields = ('to_currency')
 
+class AmountSerializer(serializers.Serializer):
+    to_amount = serializers.DecimalField(label='to_amount', max_digits=9, decimal_places=2)
+    
+    class Meta():
+        fields = ('to_amount')
 
 class SearchSerializer(serializers.Serializer):
     search_term = serializers.CharField(label='Search', max_length=25)
