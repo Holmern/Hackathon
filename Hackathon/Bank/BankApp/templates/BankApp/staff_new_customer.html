@@ -1,12 +1,35 @@
 {% extends "base.html" %}
+{% load rest_framework %}
 
 {% block main %}
 <form action="{% url 'bank:staff_new_customer' %}" method="post">
     {% csrf_token %}
     <fieldset>
-        {{ new_user_form }}
-        {{ customer_form }}
-    <button>Create User</button>
+        <label>
+        Username
+        <input name="username" type="number" />
+        </label>
+        <label>
+        First Name
+        <input name="first_name" type="text" />
+        </label>
+        <label>
+        Last Name
+        <input name="last_name" type="text" />
+        </label>
+        <label>
+        Email
+        <input name="email" type="text" />
+        </label>
+        <label>
+        Personal id
+        <input name="personal_id" type="text" />
+        </label>
+        <label>
+        phone
+        <input name="phone" type="text" />
+        </label>
+        <button> Make transfer </button>
     </fieldset>
 </form>
 {% endblock main %}

@@ -18,6 +18,7 @@ from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
 from django.db.models import Q
 from django_otp import devices_for_user
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from .authfunc import create_OTP, get_user_totp_device
 
 #REST - DONE
 class index(APIView):
@@ -183,7 +184,8 @@ class make_transfer(generics.ListCreateAPIView):
                 context = {
                     'title': 'Transfer Error',
                     'error': 'Insufficient funds for transfer.'
-                }                
+                }          
+                error = errorSerializer(context, many=True).data      
                 return Response({'error':context}) #<-- Dette driller øv.. Ingen error info kommer tilbage..
         
     def get(self, request):
@@ -396,8 +398,8 @@ class staff_new_account_partial(generics.CreateAPIView):
 
 
 class staff_new_customer(generics.CreateAPIView):
-    #renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
-    #template_name = 'BankApp/staff_new_customer.html'
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'BankApp/staff_new_customer.html'
     serializer_class = NewUserCustomerSerializer
     permissions_classes = [permissions.IsAuthenticated, ]
 
@@ -408,44 +410,29 @@ class staff_new_customer(generics.CreateAPIView):
     def post(self, request):
         assert request.user.is_staff, 'Customer user routing staff view.'
 
-        rank = Rank.objects.filter(pk=request.POST['rank']).first()
-        rank = request.data['rank']
-        #request.data['rank'] = Rank.objects.filter(pk=request.data['rank'])
         serializer = NewUserCustomerSerializer(data=request.data)
         if serializer.is_valid():
-            username    = request.POST['username']
-            first_name  = request.POST['first_name']
-            last_name   = request.POST['last_name']
-            email       = request.POST['email']
+            username    = request.data['username']
+            first_name  = request.data['first_name']
+            last_name   = request.data['last_name']
+            email       = request.data['email']
             password    = token_urlsafe(8)
-            rank        = request.POST['rank']
-            personal_id = request.POST['personal_id']
-            phone       = request.POST['phone']
-            try:
-                user = User.objects.create_user(
-                        username=username,
-                        password=password,
-                        email=email,
-                        first_name=first_name,
-                        last_name=last_name
-                )
-                print(f'********** Username: {username} -- Password: {password}')
-                customer = Customer.objects.create(user=user, rank=rank, personal_id=personal_id, phone=phone)
-                print(create_OTP(user))
-                #cus_data = CustomerSerializer(customer, many=True).data
-                #user_data = CurrentUserSerializer(user, many=True).data
-                #cus_data.save()
-                #user_data.save()
-                #return staff_customer_details(request, user.pk)
-
-                return redirect('/bankapp/staff_dashboard')
-                #Response({'serializer': serializer, 'Customer': customer})
-            except IntegrityError:
-                context = {
-                    'title': 'Database Error',
-                    'error': 'User could not be created.'
-                }
-                return Response({'serializer': serializer})
+            rank        = request.data['rank']
+            personal_id = request.data['personal_id']
+            phone       = request.data['phone']
+            print(f'-- rank: {rank}  -- personal: {personal_id}  -- phone {phone} ')
+            rank1 = Rank.objects.filter(pk=rank).first()
+            user = User.objects.create_user(username=username, password=password, email=email, first_name=first_name, last_name=last_name)
+            print(f'********** Username: {username} -- Password: {password}')
+            print(f'user: {user}  -- rank: {rank}  -- personal: {personal_id}  -- phone {phone} ')
+            customer = Customer.objects.create(user=user, rank=rank1, personal_id=personal_id, phone=phone)
+            create_OTP(user)
+            return redirect(f'/bankapp/staff_customer_details/{user.pk}')
+        else:
+            context = {
+                'error': "error was made"
+            }
+            return Response(serializer.data)
 
 '''
 @login_required
@@ -491,21 +478,3 @@ def staff_new_customer(request):
     }
     return render(request, 'BankApp/staff_new_customer.html', context)
 '''
-
-# Func for 2-way-Auth
-def get_user_totp_device(user, confirmed=None):
-    devices = devices_for_user(user, confirmed=confirmed)
-    for device in devices:
-        if isinstance(device, TOTPDevice):
-            return device
-# Func for 2-way-Auth
-def create_OTP(user):
-    device = get_user_totp_device(user)
-    if not device:
-        device = user.totpdevice_set.create(confirmed=True)
-    url = device.config_url
-    #print(url)
-    url = url.split('=')
-    qr_code_url = url[1].replace('&algorithm', '')
-    print(f'********* QR-Code: {qr_code_url} *********')
-    return qr_code_url

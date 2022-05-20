@@ -39,7 +39,7 @@ class AccountSerializer (serializers.ModelSerializer):
 
 
 class CustomerSerializer (serializers.ModelSerializer):
-    user = CurrentUserSerializer(read_only=True)
+    user = CurrentUserSerializer()
     accounts = AccountSerializer(many=True, read_only=True)
 
     class Meta:
@@ -98,7 +98,7 @@ class NewUserCustomerSerializer(serializers.Serializer):
     email = serializers.EmailField(label='email', max_length=25)
     #rank = RankSerializer(readyonly=True)
     rank = serializers.PrimaryKeyRelatedField( queryset=Rank.objects.all())
-    #rank = serializers.CharField(label='rank', max_length=25)
+    #rank = serializers.IntegerField(label='rank')
     personal_id = serializers.CharField(label='personal_id', max_length=25)
     phone = serializers.CharField(label='phone', max_length=25)
     
@@ -127,3 +127,9 @@ class UserForm(forms.ModelForm):
         fields = ('username', 'first_name', 'last_name', 'email')
 '''
 
+class errorSerializer(serializers.Serializer):
+    title = serializers.CharField(label='title', max_length=25)
+    error = serializers.CharField(label='error', max_length=50)
+
+    class meta:
+        fields = ('title', 'error')
