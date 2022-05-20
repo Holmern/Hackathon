@@ -3,7 +3,7 @@ from dataclasses import field
 from locale import currency
 from unittest.util import _MAX_LENGTH
 from rest_framework import serializers
-from .models import Customer, Account, Ledger, UID
+from .models import Customer, Account, Ledger, UID, Rank
 from drf_braces.serializers.form_serializer import FormSerializer
 from .forms import TransferForm
 from django.contrib.auth.models import User
@@ -58,6 +58,11 @@ class TransferSerializer(serializers.Serializer):
     class Meta:
         fields = ('amount', 'debit_account', 'debit_text', 'credit_account', 'credit_text')
 
+class RankSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Rank
+        fields = ('name', 'value')
 
 class LoanSerializer(serializers.Serializer):
     name = serializers.CharField(label='Name for Loan', max_length=25)
@@ -86,15 +91,21 @@ class NewAccountSerializer(serializers.Serializer):
         fields = ('new_account')
 
 
-class NewAccountSerializer(serializers.Serializer):
-    username = serializers.CharField(label='New Account name', max_length=25)
-    first_name = serializers.CharField(label='New Account name', max_length=25)
-    last_name = serializers.CharField(label='New Account name', max_length=25)
-    email = serializers.CharField(label='New Account name', max_length=25)
+class NewUserCustomerSerializer(serializers.Serializer):
+    username = serializers.CharField(label='username', max_length=25)
+    first_name = serializers.CharField(label='First name', max_length=25)
+    last_name = serializers.CharField(label='Last name', max_length=25)
+    email = serializers.EmailField(label='email', max_length=25)
+    #rank = RankSerializer(readyonly=True)
+    rank = serializers.PrimaryKeyRelatedField( queryset=Rank.objects.all())
+    #rank = serializers.CharField(label='rank', max_length=25)
+    personal_id = serializers.CharField(label='personal_id', max_length=25)
+    phone = serializers.CharField(label='phone', max_length=25)
     
     class Meta:
-        fields = ('username', 'first_name', 'last_name', 'email')
+        fields = ('username', 'first_name', 'last_name', 'email', 'rank', 'personal_id', 'phone')
 
+'''
 class NewUserForm(forms.ModelForm):
     class Meta:
         model = User
@@ -114,5 +125,5 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('username', 'first_name', 'last_name', 'email')
-
+'''
 

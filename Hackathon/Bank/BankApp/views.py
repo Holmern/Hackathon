@@ -396,18 +396,58 @@ class staff_new_account_partial(generics.CreateAPIView):
 
 
 class staff_new_customer(generics.CreateAPIView):
-    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
-    template_name = 'BankApp/staff_new_account_partial.html'
-    serializer_class = CustomerSerializer
+    #renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    #template_name = 'BankApp/staff_new_customer.html'
+    serializer_class = NewUserCustomerSerializer
     permissions_classes = [permissions.IsAuthenticated, ]
 
-    def post(self, request, user):
+    def get(self, request):
+        assert request.user.is_staff, 'Customer user routing staff view.'
+        return Response({})
+    
+    def post(self, request):
         assert request.user.is_staff, 'Customer user routing staff view.'
 
-        ser
+        rank = Rank.objects.filter(pk=request.POST['rank']).first()
+        rank = request.data['rank']
+        #request.data['rank'] = Rank.objects.filter(pk=request.data['rank'])
+        serializer = NewUserCustomerSerializer(data=request.data)
+        if serializer.is_valid():
+            username    = request.POST['username']
+            first_name  = request.POST['first_name']
+            last_name   = request.POST['last_name']
+            email       = request.POST['email']
+            password    = token_urlsafe(8)
+            rank        = request.POST['rank']
+            personal_id = request.POST['personal_id']
+            phone       = request.POST['phone']
+            try:
+                user = User.objects.create_user(
+                        username=username,
+                        password=password,
+                        email=email,
+                        first_name=first_name,
+                        last_name=last_name
+                )
+                print(f'********** Username: {username} -- Password: {password}')
+                customer = Customer.objects.create(user=user, rank=rank, personal_id=personal_id, phone=phone)
+                print(create_OTP(user))
+                #cus_data = CustomerSerializer(customer, many=True).data
+                #user_data = CurrentUserSerializer(user, many=True).data
+                #cus_data.save()
+                #user_data.save()
+                #return staff_customer_details(request, user.pk)
 
+                return redirect('/bankapp/staff_dashboard')
+                #Response({'serializer': serializer, 'Customer': customer})
+            except IntegrityError:
+                context = {
+                    'title': 'Database Error',
+                    'error': 'User could not be created.'
+                }
+                return Response({'serializer': serializer})
 
-
+'''
 @login_required
 def staff_new_customer(request):
     assert request.user.is_staff, 'Customer user routing staff view.'
@@ -450,6 +490,7 @@ def staff_new_customer(request):
         'customer_form': customer_form,
     }
     return render(request, 'BankApp/staff_new_customer.html', context)
+'''
 
 # Func for 2-way-Auth
 def get_user_totp_device(user, confirmed=None):
