@@ -64,20 +64,12 @@ class LoanSerializer(serializers.Serializer):
         fields = ('name', 'amount')
 
 class ConvertSerializer(serializers.Serializer):
-    from_currency = serializers.CharField(label='From Currency', max_length=3)
+    currency1 = serializers.CharField(label='From Currency', max_length=3)
     amount = serializers.DecimalField(label='Amount', max_digits=9, decimal_places=2)
-    to_currency = serializers.CharField(label='To Currency', max_length=3)
+    currency2 = serializers.CharField(label='To Currency', max_length=3)
     
-    class Meta():
-        fields = ('from_currency')
-        fields = ('amount')
-        fields = ('to_currency')
-
-class AmountSerializer(serializers.Serializer):
-    to_amount = serializers.DecimalField(label='to_amount', max_digits=9, decimal_places=2)
-    
-    class Meta():
-        fields = ('to_amount')
+    class Meta:
+        fields = ('currency1', 'amount', 'currency2')
 
 class SearchSerializer(serializers.Serializer):
     search_term = serializers.CharField(label='Search', max_length=25)

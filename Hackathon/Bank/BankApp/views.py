@@ -449,22 +449,26 @@ class convert_currency(generics.ListAPIView):
         return Response({})
 
     def post(self, request):
-        # Where USD is the base currency you want to use
-        currency1 = request.POST['currency1']
-        amount = request.POST['amount']
-        currency2 = request.POST['currency2']
-        url = f'https://v6.exchangerate-api.com/v6/e19f110df09288776f9cbd42/latest/{currency1}'
+        serializer = ConvertSerializer(data = request.data)
+        if serializer.is_valid():
+            # Where USD is the base currency you want to use
+            currency1 = request.data['currency1']
+            amount = request.data['amount']
+            currency2 = request.data['currency2']
+            url = f'https://v6.exchangerate-api.com/v6/e19f110df09288776f9cbd42/latest/{currency1}'
 
-        # Making our request
-        response = requests.get(url)
-        data = response.json()
-        con_rate = data["conversion_rates"]
-        con_rate = con_rate[currency2]
-        amount2 = (float(amount) * con_rate)
+            # Making our request
+            response = requests.get(url)
+            data = response.json()
+            con_rate = data["conversion_rates"]
+            con_rate = con_rate[currency2]
+            amount2 = round((float(amount) * con_rate),2)
+            ResultCurrency = f'{currency2} {amount2}'
 
-        # Your JSON object
-        print(amount2)
-        print(con_rate)
-        conversion = ConvertSerializer(amount2, many=True).data
-        return Response({'conversion':conversion})
+            # Your JSON object
+            print(amount2)
+            print(con_rate)
+            #conversion = ConvertSerializer(amount2, many=True).data
+            #amount2 = AmountSerializer(amount2).data
+            return Response({'amount':ResultCurrency})
 	
