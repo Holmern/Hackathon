@@ -31,7 +31,7 @@ Your project should be documented appropriately (e.g., ER-Diagram, short intro),
 6. As an Employee of the Bank, I would like to CRUD Accounts, so customers have a place to keep their capital.
 
 ## Conceptuel Model 
-![Conceptuel Model](ConceptualDjango.png)
+![Conceptuel Model](concDjango.png)
 
 ## ER Diagram
 ![ER Diagram](ERDJANO.png)
