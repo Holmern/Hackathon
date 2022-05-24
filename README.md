@@ -34,7 +34,7 @@ Your project should be documented appropriately (e.g., ER-Diagram, short intro),
 ![Conceptuel Model](concDjango.png)
 
 ## ER Diagram
-![ER Diagram](ERDJANO.png)
+![ER Diagram](ERDJANGO.png)
 
 ## Running the project
 Once the project is on your local machine, run the following commands in the terminal.
