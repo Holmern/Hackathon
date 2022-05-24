@@ -9,13 +9,13 @@
 {% endif %}
 
 <h3>Account Details</h3>
-
 <table>
     <tr>
         <th>Account Number</th>
         <th>Account Name</th>
         <th>Balance</th>
     </tr>
+    {% for account in account%}
     <tr>
         <td>{{ account.pk }}</td>
         <td>{{ account.name }}</td>
@@ -39,6 +39,7 @@
         <td>{{ movement.timestamp }}</td>
         <td>{{ movement.text }}</td>
     </tr>
+    {% endfor %}
     {% endfor %}
 </table>
 

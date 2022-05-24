@@ -1,11 +1,48 @@
 {% extends "base.html" %}
+{% load rest_framework %}
 
 {% block main %}
+
+<h3>My accounts:</h3>
+<table>
+    <tr>
+        <th>Account Number</th>
+        <th>Account Name</th>
+        <th>Account Balance</th>
+    </tr>
+    {% for account in accounts %}
+    <tr>
+        <td><a href="{% url 'bank:account_details' account.pk %}">{{ account.pk }}</a></td>
+        <td>{{ account.name }}</td>
+        <td class="amount">{{ account.balance|floatformat:"2" }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<br>
 <form action="{% url 'bank:make_transfer' %}" method="post">
     {% csrf_token %}
     <fieldset>
-        {{ form }}
-    <button>Log In</button>
+    <label>
+    Amount
+    <input name="amount" type="number" />
+    </label>
+    <label>
+    Debit account
+    <input name="debit_account" type="text" />
+    </label>
+    <label>
+    Debit text
+    <input name="debit_text" type="text" />
+    </label>
+    <label>
+    Credit account
+    <input name="credit_account" type="text" />
+    </label>
+    <label>
+    Credit text
+    <input name="credit_text" type="text" />
+    </label>
+    <button> Make transfer </button>
     </fieldset>
 </form>
 {% endblock main %}
