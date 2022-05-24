@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import index, dashboard, account_details, transaction_details, make_transfer, staff_dashboard, staff_search_partial, staff_customer_details, staff_account_list_partial, staff_account_details, error
+from .views import index, dashboard, account_details, transaction_details, make_transfer, staff_dashboard, staff_customer_details, staff_account_list_partial, staff_account_details, make_loan, staff_new_account_partial, staff_new_customer
 from . import views
 
 
@@ -18,20 +18,20 @@ urlpatterns = [
     path('transaction_details/<int:transaction>/', transaction_details.as_view(), name='transaction_details'),
     #path('make_transfer/', views.make_transfer, name='make_transfer'),
     path('make_transfer/', make_transfer.as_view(), name='make_transfer'),
-    path('make_loan/', views.make_loan, name='make_loan'),
+    #path('make_loan/', views.make_loan, name='make_loan'),
+    path('make_loan/', make_loan.as_view(), name='make_loan'),
+
 
     #path('staff_dashboard/', views.staff_dashboard, name='staff_dashboard'),
     path('staff_dashboard/', staff_dashboard.as_view(), name='staff_dashboard'),
-    #path('staff_search_partial/', views.staff_search_partial, name='staff_search_partial'),
-    path('staff_search_partial/', staff_search_partial.as_view(), name='staff_search_partial'),
     path('staff_customer_details/<int:pk>/', views.staff_customer_details, name='staff_customer_details'),
     #path('staff_customer_details/<int:pk>/', staff_customer_details.as_view(), name='staff_customer_details'),
-    path('staff_account_list_partial/<int:pk>/', views.staff_account_list_partial, name='staff_account_list_partial'),
-    #path('staff_account_list_partial/<int:pk>/', staff_account_list_partial.as_view(), name='staff_account_list_partial'),
+    #path('staff_account_list_partial/<int:pk>/', views.staff_account_list_partial, name='staff_account_list_partial'),
+    path('staff_account_list_partial/<int:pk>/', staff_account_list_partial.as_view(), name='staff_account_list_partial'),
     #path('staff_account_details/<int:pk>/', views.staff_account_details, name='staff_account_details'),
     path('staff_account_details/<int:pk>/', staff_account_details.as_view(), name='staff_account_details'),
-    path('staff_new_account_partial/<int:user>/', views.staff_new_account_partial, name='staff_new_account_partial'),
-    path('staff_new_customer/', views.staff_new_customer, name='staff_new_customer'),
-
-    path('error/', error.as_view(), name='error')
+    #path('staff_new_account_partial/<int:user>/', views.staff_new_account_partial, name='staff_new_account_partial'),
+    path('staff_new_account_partial/<int:user>/', staff_new_account_partial.as_view(), name='staff_new_account_partial'),
+    #path('staff_new_customer/', views.staff_new_customer, name='staff_new_customer'),
+    path('staff_new_customer/', staff_new_customer.as_view(), name='staff_new_customer'),
 ]

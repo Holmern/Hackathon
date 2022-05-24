@@ -18,7 +18,7 @@ class UID(models.Model):
         return f'{self.pk}'
 
 
-class Rank(models.Model):
+'''class Rank(models.Model):
     name        = models.CharField(max_length=35, unique=True, db_index=True)
     value       = models.IntegerField(unique=True, db_index=True)
 
@@ -27,12 +27,19 @@ class Rank(models.Model):
         return cls.objects.all().aggregate(models.Min('value'))['value__min']
 
     def __str__(self):
-        return f'{self.value}:{self.name}'
+        return f'{self.value}:{self.name}' '''
+
+RANK_CHOICES = (
+    ('Basic', 'Basic'),
+    ('Silver', 'Silver'),
+    ('Gold', 'Gold')
+)
 
 
 class Customer(models.Model):
     user        = models.OneToOneField(User, primary_key=True, on_delete=models.PROTECT)
-    rank        = models.ForeignKey(Rank, default=2, on_delete=models.PROTECT)
+    rank        = models.CharField(choices=RANK_CHOICES, max_length=7)
+    #rank        = models.ForeignKey(Rank, default=2, on_delete=models.PROTECT)
     personal_id = models.IntegerField(db_index=True)
     phone       = models.CharField(max_length=35, db_index=True)
 
@@ -46,7 +53,8 @@ class Customer(models.Model):
 
     @property
     def can_make_loan(self) -> bool:
-        return self.rank.value >= settings.CUSTOMER_RANK_LOAN
+        #return self.rank.value >= settings.CUSTOMER_RANK_LOAN
+        return self.rank == 'Silver' or self.rank == 'Gold'
 
     @property
     def default_account(self) -> Account:
@@ -65,7 +73,7 @@ class Customer(models.Model):
             is_loan=True
         )
 
-    @classmethod
+    '''@classmethod
     def search(cls, search_term):
         return cls.objects.filter(
             Q(user__username__contains=search_term)   |
@@ -74,7 +82,7 @@ class Customer(models.Model):
             Q(user__email__contains=search_term)      |
             Q(personal_id__contains=search_term)      |
             Q(phone__contains=search_term)
-        )[:15]
+        )[:15]'''
 
     def __str__(self):
         return f'{self.personal_id}: {self.full_name}'
@@ -117,6 +125,7 @@ class Ledger(models.Model):
                 #if (credit_account.balance + amount) > 0 and is_loan: raise InsufficientFunds
                 #else:
                     uid = UID.uid
+                    #t_id = 
                     cls(amount=-amount, transaction=uid, account=debit_account, text=debit_text).save()
                     cls(amount=amount, transaction=uid, account=credit_account, text=credit_text).save()
             else:
@@ -124,4 +133,4 @@ class Ledger(models.Model):
         return uid
 
     def __str__(self):
-        return f'{self.amount} :: {self.transaction} :: {self.timestamp} :: {self.account} :: {self.text}'
+        return f'{self.amount} :: {self.transaction} :: {self.timestamp} :: {self.account} :: {self.text} :: {self.id}'
