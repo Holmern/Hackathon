@@ -6,8 +6,8 @@ from .models import UID, Account, Customer, Ledger
 class CurrentUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        #fields = ('username', 'email', 'id', 'first_name', 'last_name')
-        fields = '__all__'
+        fields = ('email', 'first_name', 'last_name')
+        #fields = '__all__'
 
 
 class uidserializer (serializers.ModelSerializer):
@@ -33,14 +33,21 @@ class AccountSerializer (serializers.ModelSerializer):
 
 
 class CustomerSerializer (serializers.ModelSerializer):
-    user = CurrentUserSerializer()
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
     accounts = AccountSerializer(many=True, read_only=True)
 
     class Meta:
-        fields = ('pk', 'user', 'rank', 'personal_id', 'phone', 'accounts', 'can_make_loan', 'full_name')
+        fields = ('user', 'pk', 'rank', 'personal_id', 'phone', 'accounts',  'can_make_loan', 'full_name')
         model = Customer
-        #fields = '__all__'
 
+'''
+class UpdateCustomerSerializer (serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        fields = ('user', 'pk', 'rank', 'personal_id', 'phone',  'can_make_loan')
+        model = Customer
+'''
 
 class TransferSerializer(serializers.Serializer):
     amount = serializers.DecimalField(label='Amount', max_digits=10, decimal_places=2)

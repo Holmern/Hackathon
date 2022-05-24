@@ -15,18 +15,6 @@ class UID(models.Model):
     def __str__(self):
         return f'{self.pk}'
 
-
-'''class Rank(models.Model):
-    name        = models.CharField(max_length=35, unique=True, db_index=True)
-    value       = models.IntegerField(unique=True, db_index=True)
-
-    @classmethod
-    def default_rank(cls) -> Rank:
-        return cls.objects.all().aggregate(models.Min('value'))['value__min']
-
-    def __str__(self):
-        return f'{self.value}:{self.name}' '''
-
 RANK_CHOICES = (
     ('Basic', 'Basic'),
     ('Silver', 'Silver'),
@@ -35,9 +23,8 @@ RANK_CHOICES = (
 
 
 class Customer(models.Model):
-    user        = models.OneToOneField(User, primary_key=True, on_delete=models.PROTECT)
+    user        = models.OneToOneField(User, on_delete=models.PROTECT)
     rank        = models.CharField(choices=RANK_CHOICES, max_length=7)
-    #rank        = models.ForeignKey(Rank, default=2, on_delete=models.PROTECT)
     personal_id = models.IntegerField(db_index=True)
     phone       = models.CharField(max_length=35, db_index=True)
 
@@ -70,17 +57,6 @@ class Customer(models.Model):
             f'Credit from loan {loan.pk}: {loan.name}',
             is_loan=True
         )
-
-    '''@classmethod
-    def search(cls, search_term):
-        return cls.objects.filter(
-            Q(user__username__contains=search_term)   |
-            Q(user__first_name__contains=search_term) |
-            Q(user__last_name__contains=search_term)  |
-            Q(user__email__contains=search_term)      |
-            Q(personal_id__contains=search_term)      |
-            Q(phone__contains=search_term)
-        )[:15]'''
 
     def __str__(self):
         return f'{self.personal_id}: {self.full_name}'

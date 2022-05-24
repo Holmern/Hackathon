@@ -4,7 +4,8 @@ from .views import (account_details, convert_currency, dashboard,
                     make_loan, make_transfer, staff_account_details,
                     staff_account_list_partial, staff_dashboard,
                     staff_new_account_partial, staff_new_customer,
-                    transaction_details, login)
+                    transaction_details, login, staff_customer_details, 
+                    staff_user_details)
 
 app_name = "bank"
 
@@ -19,6 +20,8 @@ urlpatterns = [
     path('make_loan/', make_loan.as_view(), name='make_loan'),
     path('staff_dashboard/', staff_dashboard.as_view(), name='staff_dashboard'),
     path('staff_customer_details/<int:pk>/', views.staff_customer_details, name='staff_customer_details'), #<-- Make as_view()!
+    #path('staff_customer_details/<int:pk>/', staff_customer_details.as_view(), name='staff_customer_details'),
+    path('staff_user_details/<int:pk>/', staff_user_details.as_view(), name='staff_user_details'),
     path('staff_account_list_partial/<int:pk>/', staff_account_list_partial.as_view(), name='staff_account_list_partial'),
     path('staff_account_details/<int:pk>/', staff_account_details.as_view(), name='staff_account_details'),
     path('staff_new_account_partial/<int:user>/', staff_new_account_partial.as_view(), name='staff_new_account_partial'),
