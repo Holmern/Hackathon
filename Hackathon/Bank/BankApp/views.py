@@ -1,32 +1,35 @@
 from decimal import Decimal
 from secrets import token_urlsafe
-from urllib import response
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import redirect, render, reverse, get_object_or_404
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
-from django.db import IntegrityError
-from .forms import TransferForm, UserForm, CustomerForm, NewUserForm, NewAccountForm
-from .models import Account, Ledger, Customer
-from .errors import InsufficientFunds
-from .serializers import *
-from .auth_func import create_OTP
-from rest_framework import generics, permissions
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
-from django.db.models import Q
 
-class index(APIView):
+import requests
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
+from django.db.models import Q
+from django.shortcuts import get_object_or_404, redirect, render
+from rest_framework import generics, permissions
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .auth_func import create_OTP
+from .forms import (CustomerForm, NewAccountForm,
+                    UserForm)
+from .models import Account, Customer, Ledger
+from .serializers import *
+
+class login(APIView):
     permissions_classes = [permissions.IsAuthenticated, ]
-    #permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.AllowAny,)
 
     def get(self, request):
-        if request.user.is_staff:
-            return redirect('/bankapp/staff_dashboard')
-        else:
-            return redirect('/bankapp/dashboard')
+        if request.user.is_authenticated:
+            if request.user.is_staff:
+                return redirect('/bankapp/staff_dashboard')
+            else:
+                return redirect('/bankapp/dashboard')
+        else:    
+            return redirect('/mfa/')
 
 
 # Customer views
@@ -53,7 +56,7 @@ class account_details(generics.RetrieveDestroyAPIView):
     def get(self, request, pk):
         assert not request.user.is_staff, 'Staff user routing customer view.'
 
-        queryset = get_object_or_404(Account, user=request.user, pk=pk)
+        queryset = Account.objects.filter(user=request.user, pk=pk)
         account_data = AccountSerializer(queryset, many=True).data
         return Response({'account': account_data})
 
@@ -88,17 +91,8 @@ class make_transfer(generics.ListCreateAPIView):
             debit_text = request.POST['debit_text']
             credit_account = Account.objects.get(pk=request.POST['credit_account'])
             credit_text = request.POST['credit_text']
-            #--------------------#
-            try:
-                transfer = Ledger.transfer(amount, debit_account, debit_text, credit_account, credit_text)
-                return redirect(f'/bankapp/transaction_details/{transfer}')
-            except InsufficientFunds:
-                context = {
-                    'title': 'Transfer Error',
-                    'error': 'Insufficient funds for transfer.'
-                }
-                error = errorSerializer(context, many=True).data                
-                return Response({'error':error}) #<-- Dette driller øv.. Ingen error info kommer tilbage..
+            transfer = Ledger.transfer(int(amount), debit_account, debit_text, credit_account, credit_text)
+            return redirect(f'/bankapp/transaction_details/{transfer}')
     
     def get(self, request):
         assert not request.user.is_staff, 'Staff user routing customer view.'
@@ -152,12 +146,12 @@ class staff_dashboard(generics.ListAPIView):
 
         search_term = request.POST['search_term']
         customers = Customer.objects.filter(
-            Q(userusernamecontains=search_term)   |
-            Q(userfirst_namecontains=search_term) |
-            Q(userlast_namecontains=search_term)  |
-            Q(useremailcontains=search_term)      |
-            Q(personal_idcontains=search_term)    |
-            Q(phonecontains=search_term)
+            Q(user__username__contains=search_term)   |
+            Q(user__first_name__contains=search_term) |
+            Q(user__last_name__contains=search_term)  |
+            Q(user__email__contains=search_term)      |
+            Q(personal_id__contains=search_term)    |
+            Q(phone__contains=search_term)
         )[:15]
         customers_data = CustomerSerializer(customers, many=True).data
         print(customers_data)
@@ -269,3 +263,36 @@ class staff_new_customer(generics.CreateAPIView):
                 'error': "error was made"
             }
             return Response(serializer.data)
+
+class convert_currency(generics.ListAPIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'BankApp/currency_convert.html'
+    serializer_class = ConvertSerializer
+    permissions_classes = [permissions.IsAuthenticated,]
+
+    def get(self, request):
+        return Response({})
+
+    def post(self, request):
+        serializer = ConvertSerializer(data = request.data)
+        if serializer.is_valid():
+            # Where USD is the base currency you want to use
+            currency1 = request.data['currency1']
+            amount = request.data['amount']
+            currency2 = request.data['currency2']
+            url = f'https://v6.exchangerate-api.com/v6/e19f110df09288776f9cbd42/latest/{currency1}'
+
+            # Making our request
+            response = requests.get(url)
+            data = response.json()
+            con_rate = data["conversion_rates"]
+            con_rate = con_rate[currency2]
+            amount2 = round((float(amount) * con_rate),2)
+            ResultCurrency = f'{currency2} {amount2}'
+
+            # Your JSON object
+            print(amount2)
+            print(con_rate)
+            #conversion = ConvertSerializer(amount2, many=True).data
+            #amount2 = AmountSerializer(amount2).data
+            return Response({'amount':ResultCurrency})

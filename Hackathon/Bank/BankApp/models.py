@@ -1,10 +1,8 @@
 from __future__ import annotations
 from decimal import Decimal
-from django.conf import settings
-from django.db import models, transaction
-from django.db.models import Q
-from django.db.models.query import QuerySet
 from django.contrib.auth.models import User
+from django.db import models, transaction
+from django.db.models.query import QuerySet
 from .errors import InsufficientFunds
 
 

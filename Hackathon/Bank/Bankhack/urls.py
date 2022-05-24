@@ -14,14 +14,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.shortcuts import redirect
-from django.urls import path, include
-from .views import login
 from django.contrib.auth.views import LoginView
+from django.urls import include, path
 from django_otp.forms import OTPAuthenticationForm
 
 urlpatterns = [
-    path('', login.as_view(), name='index'),
     path('mfa/', LoginView.as_view(authentication_form=OTPAuthenticationForm)),
     path('admin/', admin.site.urls),
     path('bankapp/', include('BankApp.urls')),

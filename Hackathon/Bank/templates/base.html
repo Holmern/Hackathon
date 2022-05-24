@@ -23,7 +23,7 @@
 
     <nav>
         <ul>
-            <li><a href="{% url 'bank:index' %}">Home</a></li>                
+            <li><a href="{% url 'bank:login' %}">Home</a></li>                
                 
             {% if user.is_staff %}
             <li><a href="{% url 'bank:staff_new_customer' %}">Create New Customer</a></li>
@@ -35,6 +35,7 @@
             {% if user.is_superuser %}
             <li><a href="{% url 'admin:index' %}">Admin Page</a></li>
             {% endif %}
+            <li><a href="{% url 'bank:convert_currency' %}">Currency Converter</a></li>
             <li style="float:right"><a href="{% url 'user:logout' %}">Log out</a></li>
         </ul>
     </nav>

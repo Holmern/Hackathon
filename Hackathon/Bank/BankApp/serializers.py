@@ -1,7 +1,6 @@
-from unittest.util import _MAX_LENGTH
-from rest_framework import serializers
-from .models import Customer, Account, Ledger, UID
 from django.contrib.auth.models import User
+from rest_framework import serializers
+from .models import UID, Account, Customer, Ledger
 
 
 class CurrentUserSerializer(serializers.ModelSerializer):
@@ -45,7 +44,7 @@ class CustomerSerializer (serializers.ModelSerializer):
 
 class TransferSerializer(serializers.Serializer):
     amount = serializers.DecimalField(label='Amount', max_digits=10, decimal_places=2)
-    debit_account = serializers.PrimaryKeyRelatedField(label='Debit Account', queryset=Account.objects.none())
+    debit_account = serializers.PrimaryKeyRelatedField(label='Debit Account', queryset=Account.objects.all())
     debit_text = serializers.CharField(label='Debit Account Text', max_length=25)
     credit_account = serializers.IntegerField(label='Credit Account Number')
     credit_text = serializers.CharField(label='Credit Account Text', max_length=25)
@@ -107,3 +106,11 @@ class errorSerializer(serializers.Serializer):
 
     class meta:
         fields = ('title', 'error')
+
+class ConvertSerializer(serializers.Serializer):
+    currency1 = serializers.CharField(label='From Currency', max_length=3)
+    amount = serializers.DecimalField(label='Amount', max_digits=9, decimal_places=2)
+    currency2 = serializers.CharField(label='To Currency', max_length=3)
+    
+    class Meta:
+        fields = ('currency1', 'amount', 'currency2')
