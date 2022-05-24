@@ -31,10 +31,10 @@ Your project should be documented appropriately (e.g., ER-Diagram, short intro),
 6. As an Employee of the Bank, I would like to CRUD Accounts, so customers have a place to keep their capital.
 
 ## Conceptuel Model 
-![Conceptuel Model](Banking_conceptional.png)
+![Conceptuel Model](ConceptualDjango.png)
 
 ## ER Diagram
-![ER Diagram](Banking_Hack_ER.png)
+![ER Diagram](ERDJANO.png)
 
 ## Running the project
 Once the project is on your local machine, run the following commands in the terminal.
