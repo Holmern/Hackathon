@@ -82,7 +82,7 @@ class SearchSerializer(serializers.Serializer):
 
 
 class NewAccountSerializer(serializers.Serializer):
-    search_term = serializers.CharField(label='New Account name', max_length=25)
+    new_account = serializers.CharField(label='New Account name', max_length=25)
     
     class Meta:
         fields = ('new_account')

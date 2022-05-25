@@ -103,8 +103,8 @@ class make_transfer(generics.ListCreateAPIView):
         return Response({'accounts': account_data})
 
 class make_loan(generics.CreateAPIView):
-    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
-    template_name = 'BankApp/make_loan.html'
+    #renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    #template_name = 'BankApp/make_loan.html'
     serializer_class = LoanSerializer
     permissions_classes = [permissions.IsAuthenticated, ]
 
@@ -121,7 +121,7 @@ class make_loan(generics.CreateAPIView):
             return redirect('/bankapp/dashboard') # clean up - return error
 
         if serializer.is_valid():
-            request.user.customer.make_loan(Decimal(request.POST['amount']), request.POST['name'])
+            request.user.customer.make_loan(Decimal(request.data['amount']), request.data['name'])
             return redirect('/bankapp/dashboard')
 
     def get(self, request):
@@ -155,7 +155,7 @@ class staff_dashboard(generics.ListAPIView):
             Q(phone__contains=search_term)
         )[:15]
         customers_data = CustomerSerializer(customers, many=True).data
-        print(customers_data)
+        #print(customers_data)
         return Response({'customers': customers_data})
    
 
@@ -235,8 +235,10 @@ class staff_account_list_partial(generics.ListAPIView): # <--- TEST!
         assert request.user.is_staff, 'Customer user routing staff view.'
 
         customer = Customer.objects.filter(pk=pk).first()
-        print(customer.user)
-        accounts = customer.accounts #<--- test
+        user=User.objects.get(pk=customer.user.pk)
+        print(customer, "<----")
+        #accounts = customer.accounts #<--- test
+        accounts = Account.objects.filter(user=user)
         account_data = AccountSerializer(accounts, many=True).data
         return Response({'accounts': account_data})
 
@@ -256,8 +258,8 @@ class staff_account_details(generics.ListAPIView):
 
 
 class staff_new_account_partial(generics.CreateAPIView):
-    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
-    template_name = 'BankApp/staff_new_account_partial.html'
+    #renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    #template_name = 'BankApp/staff_new_account_partial.html'
     serializer_class = NewAccountSerializer
     permissions_classes = [permissions.IsAuthenticated, ]
 
@@ -266,7 +268,8 @@ class staff_new_account_partial(generics.CreateAPIView):
         serializer = NewAccountSerializer(data=request.data)
 
         if serializer.is_valid():
-            Account.objects.create(user=User.objects.get(pk=user), name=request.POST['name'])
+            customer = Customer.objects.filter(pk=user).first()
+            Account.objects.create(user=User.objects.get(pk=customer.user.pk), name=request.data['new_account'])
         return redirect(f'/bankapp/staff_customer_details/{user}')
 
 

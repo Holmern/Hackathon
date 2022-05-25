@@ -20,7 +20,6 @@
         <th>Persal ID</th>
         <th>Name</th>
         <th>Phone</th>
-        <th>Email</th>
     </thead>
     <tbody id="search-results">
     {% for customer in customers %}
@@ -29,7 +28,6 @@
     <td>{{ customer.personal_id }}</td>
     <td>{{ customer.full_name }}</td>
     <td>{{ customer.phone }}</td>
-    <td>{{ customer.user.email }}</td>
 </tr>
 {% endfor %}
     </tbody>

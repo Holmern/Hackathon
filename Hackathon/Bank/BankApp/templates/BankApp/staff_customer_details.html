@@ -33,7 +33,7 @@
 <form action="{% url 'bank:staff_new_account_partial' customer.pk %}" method="post">
     {% csrf_token %}
     <fieldset>
-        <input name="name" type="text" />
+        <input name="new_account" type="text" />
     <button>Create Account</button>
     </fieldset>
 </form>
