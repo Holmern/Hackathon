@@ -271,8 +271,8 @@ class staff_new_account_partial(generics.CreateAPIView):
 
 
 class staff_new_customer(generics.CreateAPIView):
-    #renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
-    #template_name = 'BankApp/staff_new_customer.html'
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'BankApp/staff_new_customer.html'
     serializer_class = NewUserCustomerSerializer
     permissions_classes = [permissions.IsAuthenticated, ]
 

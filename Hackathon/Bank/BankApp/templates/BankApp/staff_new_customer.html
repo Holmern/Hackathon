@@ -7,7 +7,7 @@
     <fieldset>
         <label>
         Username
-        <input name="username" type="number" />
+        <input name="username" type="text" />
         </label>
         <label>
         First Name
@@ -19,17 +19,24 @@
         </label>
         <label>
         Email
-        <input name="email" type="text" />
+        <input name="email" type="email" />
+        </label>
+        <label for="rank">Rank:
+        <select name="rank" id="rank">
+        <option value="Basic">Basic</option>
+        <option value="Silver">Silver</option>
+        <option value="Gold">Gold</option>
+        </select>
         </label>
         <label>
         Personal id
-        <input name="personal_id" type="text" />
+        <input name="personal_id" type="number" />
         </label>
         <label>
         phone
-        <input name="phone" type="text" />
+        <input name="phone" type="number" />
         </label>
-        <button> Make transfer </button>
+        <button> Create Customer </button>
     </fieldset>
 </form>
 {% endblock main %}
