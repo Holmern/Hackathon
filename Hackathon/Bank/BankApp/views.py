@@ -92,8 +92,17 @@ class make_transfer(generics.ListCreateAPIView):
             debit_text = request.POST['debit_text']
             credit_account = Account.objects.get(pk=request.POST['credit_account'])
             credit_text = request.POST['credit_text']
-            transfer = Ledger.transfer(int(amount), debit_account, debit_text, credit_account, credit_text)
-            return redirect(f'/bankapp/transaction_details/{transfer}')
+            bank_digits = request.POST['bank_4_digits']
+            print(type(bank_digits), bank_digits)
+            if bank_digits == '4545':
+
+                transfer = Ledger.transfer(int(amount), debit_account, debit_text, credit_account, credit_text)
+                return redirect(f'/bankapp/transaction_details/{transfer}')
+
+            elif bank_digits == '5050':
+
+                transfer = Ledger.transfer(int(amount), debit_account, debit_text, credit_account, credit_text)
+                return redirect(f'/bankapp/transaction_details/{transfer}')
     
     def get(self, request):
         assert not request.user.is_staff, 'Staff user routing customer view.'
@@ -338,14 +347,3 @@ class convert_currency(generics.ListAPIView):
             #conversion = ConvertSerializer(amount2, many=True).data
             #amount2 = AmountSerializer(amount2).data
             return Response({'amount':ResultCurrency})
-
-# DOCS 
-
-from django.urls import re_path
-from rest_framework_swagger.views import get_swagger_view
-
-schema_view = get_swagger_view(title='BANK API')
-
-urlpatterns = [
-    re_path(r'^$', schema_view)
-]
