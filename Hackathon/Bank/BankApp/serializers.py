@@ -1,3 +1,4 @@
+from cProfile import label
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import UID, Account, Customer, Ledger
@@ -58,6 +59,18 @@ class TransferSerializer(serializers.Serializer):
 
     class Meta:
         fields = ('amount', 'debit_account', 'debit_text', 'credit_account', 'credit_text')
+
+class TransferExternalSerializer(serializers.Serializer):
+    amount = serializers.DecimalField(label='Amount', max_digits=10, decimal_places=2)
+    debit_account = serializers.IntegerField(label='Debit Account')
+    debit_text = serializers.CharField(label='Debit Account Text', max_length=25)
+    credit_account = serializers.IntegerField(label='Credit Account Number')
+    credit_text = serializers.CharField(label='Credit Account Text', max_length=25)
+    external_transfer = serializers.BooleanField()
+    bank_code = serializers.CharField(label='bank_code')
+
+    class Meta:
+        fields = ('amount', 'debit_account', 'debit_tet', 'credit_account', 'credit_text', 'external_transfer', 'bank_code')
 
 
 class LoanSerializer(serializers.Serializer):

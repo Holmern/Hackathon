@@ -19,7 +19,7 @@
     {% endfor %}
 </table>
 <br>
-<form action="{% url 'bank:make_transfer' %}" method="post">
+<form action="{% url 'bank:make_external_transfer' %}" method="post">
     {% csrf_token %}
     <fieldset>
     <label>
@@ -42,7 +42,13 @@
     Credit text
     <input name="credit_text" type="text" />
     </label>
-    <button> Make transfer </button>
+    <label>
+    <input name="external_transfer" type="hidden" value="True"/>
+    </label>
+    <label>
+    <input name="bank_code" type="hidden" value="8000"/>
+    </label>
+    <button> Make external transfer </button>
     </fieldset>
 </form>
 {% endblock main %}

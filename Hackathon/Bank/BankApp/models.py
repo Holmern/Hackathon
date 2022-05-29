@@ -103,5 +103,33 @@ class Ledger(models.Model):
                 raise InsufficientFunds
         return uid
 
+    @classmethod
+    def extern_transfer(cls, amount, debit_account, debit_text, credit_account, credit_text, is_loan=False) -> int:
+        assert amount >= 0, 'Negative amount not allowed for transfer.'
+        
+        with transaction.atomic():
+            if debit_account.balance >= amount or is_loan:
+                    uid = UID.uid
+                    print(uid)
+                    cls(amount=-amount, transaction=uid, account=debit_account, text=debit_text).save()
+                    #cls(amount=amount, transaction=uid, account=credit_account, text=credit_text).save()
+            else:
+                raise InsufficientFunds
+        return uid
+
+    @classmethod
+    def extern_receive_transfer(cls, amount, debit_account, debit_text, credit_account, credit_text, is_loan=False) -> int:
+        assert amount >= 0, 'Negative amount not allowed for transfer.'
+        
+        with transaction.atomic():
+            if debit_account.balance >= amount or is_loan:
+                    uid = UID.uid
+                    print(uid)
+                    #cls(amount=-amount, transaction=uid, account=debit_account, text=debit_text).save()
+                    cls(amount=amount, transaction=uid, account=credit_account, text=credit_text).save()
+            else:
+                raise InsufficientFunds
+        return uid
+
     def __str__(self):
         return f'{self.amount} :: {self.transaction} :: {self.timestamp} :: {self.account} :: {self.text} :: {self.id}'

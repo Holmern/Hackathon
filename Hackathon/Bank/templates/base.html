@@ -28,7 +28,8 @@
             {% if user.is_staff %}
             <li><a href="{% url 'bank:staff_new_customer' %}">Create New Customer</a></li>
             {% else %}
-            <li><a href="{% url 'bank:make_transfer' %}">Create Transfer</a></li>
+            <li><a href="{% url 'bank:make_transfer' %}">Transfer</a></li>
+            <li><a href="{% url 'bank:make_external_transfer' %}">External Transfer</a></li>
             <li><a href="{% url 'bank:make_loan' %}">Create Loan</a></li>
             {% endif %}
 
