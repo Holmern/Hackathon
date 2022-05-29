@@ -11,6 +11,7 @@ from rest_framework import generics, permissions
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.authtoken.models import Token
 
 from .auth_func import create_OTP
 #from .forms import (CustomerForm, NewAccountForm,
@@ -112,6 +113,9 @@ class make_external_transfer(generics.ListCreateAPIView):
         assert not request.user.is_staff, 'Staff user routing customer view.'
         serializer = TransferExternalSerializer(data=request.data)
         print(request.data)
+        token = Token.objects.get_or_create(user=request.user)
+        session = requests.Session()
+        print(session.headers)
         if serializer.is_valid():
             amount = request.POST['amount']
             debit_account = Account.objects.get(pk=request.POST['debit_account'])
@@ -131,7 +135,7 @@ class make_external_transfer(generics.ListCreateAPIView):
                 transfer = Ledger.extern_transfer(int(amount), debit_account, f'External transfer: {debit_text}', credit_account, credit_text)
                     
                 payload = {"amount": int(amount), "debit_account": debit_account_pk, "debit_text": debit_text, "credit_account": credit_account_pk,"credit_text": credit_text, "external_transfer": external_transfer, 'bank_code': bank_code}
-                headers = {"Authorization": f'Token 24bc08f8031312dc4a2157d54d7564e8ddf71946', "X-CSRFToken": request.data['csrfmiddlewaretoken']} #"User-Agent": 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36'
+                headers = {"Authorization": f'Token {token[0]}', "X-CSRFToken": request.data['csrfmiddlewaretoken']} #"User-Agent": 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36'
                 r = requests.post('http://127.0.0.1:5050/bankapp/make_external_transfer/', data=payload, headers=headers)
                 print(r.status_code, r)
                 
@@ -342,6 +346,7 @@ class staff_new_customer(generics.CreateAPIView):
             print(f'** Username: {username} -- Password: {password}')
             print(f'user: {user}  -- rank: {rank}  -- personal: {personal_id}  -- phone {phone} ')
             Customer.objects.create(user=user, rank=rank, personal_id=personal_id, phone=phone)
+            Token.objects.create(user=user)
             create_OTP(user, password)
             return redirect(f'/bankapp/staff_customer_details/{user.pk}')
         else:
