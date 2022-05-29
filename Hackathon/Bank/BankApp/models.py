@@ -7,6 +7,7 @@ from .errors import InsufficientFunds
 
 
 class UID(models.Model):
+    
     @classmethod
     @property
     def uid(cls):
@@ -92,14 +93,10 @@ class Ledger(models.Model):
     def transfer(cls, amount, debit_account, debit_text, credit_account, credit_text, is_loan=False) -> int:
         assert amount >= 0, 'Negative amount not allowed for transfer.'
         
-        #if credit_account.name.__contains__('Loan'): is_loan = True
         with transaction.atomic():
             if debit_account.balance >= amount or is_loan:
-
-                #if (credit_account.balance + amount) > 0 and is_loan: raise InsufficientFunds
-                #else:
                     uid = UID.uid
-                    #t_id = 
+                    print(uid)
                     cls(amount=-amount, transaction=uid, account=debit_account, text=debit_text).save()
                     cls(amount=amount, transaction=uid, account=credit_account, text=credit_text).save()
             else:

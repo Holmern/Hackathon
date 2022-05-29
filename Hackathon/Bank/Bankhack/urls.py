@@ -18,7 +18,15 @@ from django.contrib.auth.views import LoginView
 from django.urls import include, path
 from django_otp.forms import OTPAuthenticationForm
 
+from rest_framework_swagger.views import get_swagger_view
+schema_view = get_swagger_view(title='API name')
+from django.urls import path
+
 urlpatterns = [
+    path('docs/', schema_view)
+]  
+
+urlpatterns += [
     path('mfa/', LoginView.as_view(authentication_form=OTPAuthenticationForm)),
     path('admin/', admin.site.urls),
     path('bankapp/', include('BankApp.urls')),
@@ -26,3 +34,4 @@ urlpatterns = [
     path('bankapp/dj-rest-auth/', include('dj_rest_auth.urls')), 
     path('bankapp/dj-rest-auth/registration', include('dj_rest_auth.registration.urls')),
 ]
+

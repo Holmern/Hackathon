@@ -24,26 +24,6 @@
     </fieldset>
 </form>
 
-<h3>User Details</h3>
-<form action="{% url 'bank:staff_user_details' customer.pk %}" method="patch">
-    {% csrf_token %}
-    <fieldset>
-        <label>
-            First name
-            <input name="rank" type="text" value="{{first_name}}"/>
-        </label>
-        <label>
-            Last name
-            <input name="personal_id" type="text" value="{{last_name}}"/>
-        </label>
-        <label>
-            Phone
-            <input name="phone" type="number" value="{{phone}}"/>
-        </label>
-    <button>Update User</button>
-    </fieldset>
-</form>
-
 <table>
     <thead>
         <tr>

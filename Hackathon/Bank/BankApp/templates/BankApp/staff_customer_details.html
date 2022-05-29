@@ -4,12 +4,22 @@
 
 <h3>Customer Details</h3>
 
-<form action="{% url 'bank:staff_customer_details' customer.pk %}" method="post">
+<form action="{% url 'bank:staff_customer_details' customer.pk %}" method="patch">
     {% csrf_token %}
     <fieldset>
-        {{ user_form.as_p }}
-        {{ customer_form.as_p }}
-    <button>Update User</button>
+        <label>
+            Rank
+            <input name="rank" type="text" value="{{rank}}"/>
+        </label>
+        <label>
+            Personal id
+            <input name="personal_id" type="text" value="{{personal_id}}"/>
+        </label>
+        <label>
+            Phone
+            <input name="phone" type="number" value="{{phone}}"/>
+        </label>
+    <button>Update Customer</button>
     </fieldset>
 </form>
 

@@ -14,8 +14,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .auth_func import create_OTP
-from .forms import (CustomerForm, NewAccountForm,
-                    UserForm)
+#from .forms import (CustomerForm, NewAccountForm,
+#                    UserForm)
 from .models import Account, Customer, Ledger
 from .serializers import *
 
@@ -130,6 +130,14 @@ class make_loan(generics.CreateAPIView):
         return Response({})
 
 
+class user_details(generics.RetrieveUpdateAPIView):
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'BankApp/user_details.html'
+    serializer_class = CurrentUserSerializer
+    permissions_classes = [permissions.IsAuthenticated, ]
+    queryset = User.objects.all()
+    lookup_field = 'pk'
+
 # Staff views
 
 class staff_dashboard(generics.ListAPIView):
@@ -157,8 +165,8 @@ class staff_dashboard(generics.ListAPIView):
         customers_data = CustomerSerializer(customers, many=True).data
         #print(customers_data)
         return Response({'customers': customers_data})
-   
 
+'''
 @login_required
 def staff_customer_details(request, pk):
     assert request.user.is_staff, 'Customer user routing staff view.'
@@ -181,28 +189,16 @@ def staff_customer_details(request, pk):
         'new_account_form': new_account_form,
     }
     return render(request, 'BankApp/staff_customer_details.html', context)
+'''
 
-'''class staff_customer_details(generics.RetrieveUpdateAPIView):
+class staff_customer_details(generics.RetrieveUpdateAPIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'BankApp/staff_customer_details.html'
     serializer_class = CustomerSerializer
     permissions_classes = [permissions.IsAuthenticated, ]
     queryset = Customer.objects.all()
 
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-
-        if getattr(instance, '_prefetched_objects_cache', None):
-            # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance.
-            instance._prefetched_objects_cache = {}
-
-        return Response(serializer.data)'''
-
+'''
 class staff_user_details(generics.RetrieveUpdateAPIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'BankApp/staff_customer_details.html'
@@ -223,7 +219,7 @@ class staff_user_details(generics.RetrieveUpdateAPIView):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
-
+'''
 
 class staff_account_list_partial(generics.ListAPIView): # <--- TEST!
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
@@ -342,3 +338,14 @@ class convert_currency(generics.ListAPIView):
             #conversion = ConvertSerializer(amount2, many=True).data
             #amount2 = AmountSerializer(amount2).data
             return Response({'amount':ResultCurrency})
+
+# DOCS 
+
+from django.urls import re_path
+from rest_framework_swagger.views import get_swagger_view
+
+schema_view = get_swagger_view(title='BANK API')
+
+urlpatterns = [
+    re_path(r'^$', schema_view)
+]
