@@ -122,13 +122,10 @@ class Ledger(models.Model):
         assert amount >= 0, 'Negative amount not allowed for transfer.'
         
         with transaction.atomic():
-            if debit_account.balance >= amount or is_loan:
-                    uid = UID.uid
-                    print(uid)
-                    #cls(amount=-amount, transaction=uid, account=debit_account, text=debit_text).save()
-                    cls(amount=amount, transaction=uid, account=credit_account, text=credit_text).save()
-            else:
-                raise InsufficientFunds
+            uid = UID.uid
+            print(uid)
+            #cls(amount=-amount, transaction=uid, account=debit_account, text=debit_text).save()
+            cls(amount=amount, transaction=uid, account=credit_account, text=credit_text).save()
         return uid
 
     def __str__(self):
