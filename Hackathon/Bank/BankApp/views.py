@@ -238,12 +238,18 @@ def staff_customer_details(request, pk):
 '''
 
 class staff_customer_details(generics.RetrieveUpdateAPIView):
-    #renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
-    #template_name = 'BankApp/staff_customer_details.html'
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'BankApp/staff_customer_details.html'
     serializer_class = CustomerSerializer
     permissions_classes = [permissions.IsAuthenticated, ]
     queryset = Customer.objects.all()
+    
+    def get(self, request, pk):
+        assert request.user.is_staff, 'Customer user routing staff view.'
 
+        customer = Customer.objects.filter(pk=pk)
+        customer_data = CustomerSerializer(customer, many=True).data
+        return Response({'customer': customer_data})
 '''
 class staff_user_details(generics.RetrieveUpdateAPIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
@@ -282,6 +288,7 @@ class staff_account_list_partial(generics.ListAPIView): # <--- TEST!
         #accounts = customer.accounts #<--- test
         accounts = Account.objects.filter(user=user)
         account_data = AccountSerializer(accounts, many=True).data
+        print(account_data)
         return Response({'accounts': account_data})
 
 # REST - DONE
