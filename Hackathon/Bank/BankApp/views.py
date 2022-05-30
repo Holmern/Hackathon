@@ -2,22 +2,20 @@ from decimal import Decimal
 from secrets import token_urlsafe
 
 import requests
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import redirect
 from rest_framework import generics, permissions
+from rest_framework.authtoken.models import Token
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.authtoken.models import Token
 
 from .auth_func import create_OTP
-#from .forms import (CustomerForm, NewAccountForm,
-#                    UserForm)
 from .models import Account, Customer, Ledger
 from .serializers import *
+
 
 class login(APIView):
     permissions_classes = [permissions.IsAuthenticated, ]
@@ -65,7 +63,7 @@ class account_details(generics.RetrieveDestroyAPIView):
 class transaction_details(generics.RetrieveDestroyAPIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'BankApp/transaction_details.html'
-    serializer_class = AccountSerializer # <---
+    serializer_class = AccountSerializer
     permissions_classes = [permissions.IsAuthenticated, ]
     
     def get(self, request, transaction):
@@ -113,7 +111,6 @@ class make_external_transfer(generics.ListCreateAPIView):
         assert not request.user.is_staff, 'Staff user routing customer view.'
         serializer = TransferExternalSerializer(data=request.data)
         print(request.data)
-        token = Token.objects.get_or_create(user=request.user)
         if serializer.is_valid():
             amount = request.POST['amount']
             debit_account = Account.objects.filter(pk=request.POST['debit_account']).first()
@@ -149,8 +146,8 @@ class make_external_transfer(generics.ListCreateAPIView):
         return Response({'accounts': account_data})
 
 class make_loan(generics.CreateAPIView):
-    #renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
-    #template_name = 'BankApp/make_loan.html'
+    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
+    template_name = 'BankApp/make_loan.html'
     serializer_class = LoanSerializer
     permissions_classes = [permissions.IsAuthenticated, ]
 
@@ -160,11 +157,7 @@ class make_loan(generics.CreateAPIView):
         serializer = LoanSerializer(data=request.data)
 
         if not request.user.customer.can_make_loan:
-            context = {
-                'title': 'Create Loan Error',
-                'error': 'Loan could not be completed.'
-            }
-            return redirect('/bankapp/dashboard') # clean up - return error
+            return redirect('/bankapp/dashboard')
 
         if serializer.is_valid():
             request.user.customer.make_loan(Decimal(request.data['amount']), request.data['name'])
@@ -209,33 +202,7 @@ class staff_dashboard(generics.ListAPIView):
             Q(phone__contains=search_term)
         )[:15]
         customers_data = CustomerSerializer(customers, many=True).data
-        #print(customers_data)
         return Response({'customers': customers_data})
-
-'''
-@login_required
-def staff_customer_details(request, pk):
-    assert request.user.is_staff, 'Customer user routing staff view.'
-
-    customer = get_object_or_404(Customer, pk=pk)
-    if request.method == 'GET':
-        user_form = UserForm(instance=customer.user)
-        customer_form = CustomerForm(instance=customer)
-    elif request.method == 'POST':
-        user_form = UserForm(request.POST, instance=customer.user)
-        customer_form = CustomerForm(request.POST, instance=customer)
-        if user_form.is_valid() and customer_form.is_valid():
-            user_form.save()
-            customer_form.save()
-    new_account_form = NewAccountForm()
-    context = {
-        'customer': customer,
-        'user_form': user_form,
-        'customer_form': customer_form,
-        'new_account_form': new_account_form,
-    }
-    return render(request, 'BankApp/staff_customer_details.html', context)
-'''
 
 class staff_customer_details(generics.RetrieveUpdateAPIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
@@ -250,30 +217,8 @@ class staff_customer_details(generics.RetrieveUpdateAPIView):
         customer = Customer.objects.filter(pk=pk)
         customer_data = CustomerSerializer(customer, many=True).data
         return Response({'customer': customer_data})
-'''
-class staff_user_details(generics.RetrieveUpdateAPIView):
-    renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
-    template_name = 'BankApp/staff_customer_details.html'
-    serializer_class = CurrentUserSerializer
-    permissions_classes = [permissions.IsAuthenticated, ]
-    queryset = User.objects.all()
 
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-
-        if getattr(instance, '_prefetched_objects_cache', None):
-            # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance.
-            instance._prefetched_objects_cache = {}
-
-        return Response(serializer.data)
-'''
-
-class staff_account_list_partial(generics.ListAPIView): # <--- TEST!
+class staff_account_list_partial(generics.ListAPIView):
     renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
     template_name = 'BankApp/staff_account_list_partial.html'
     serializer_class = AccountSerializer
@@ -284,8 +229,7 @@ class staff_account_list_partial(generics.ListAPIView): # <--- TEST!
 
         customer = Customer.objects.filter(pk=pk).first()
         user=User.objects.get(pk=customer.user.pk)
-        print(customer, "<----")
-        #accounts = customer.accounts #<--- test
+        print(customer)
         accounts = Account.objects.filter(user=user)
         account_data = AccountSerializer(accounts, many=True).data
         print(account_data)
@@ -307,8 +251,6 @@ class staff_account_details(generics.ListAPIView):
 
 
 class staff_new_account_partial(generics.CreateAPIView):
-    #renderer_classes = [JSONRenderer, TemplateHTMLRenderer]
-    #template_name = 'BankApp/staff_new_account_partial.html'
     serializer_class = NewAccountSerializer
     permissions_classes = [permissions.IsAuthenticated, ]
 
@@ -346,7 +288,6 @@ class staff_new_customer(generics.CreateAPIView):
             personal_id = request.data['personal_id']
             phone       = request.data['phone']
             print(f'-- rank: {rank}  -- personal: {personal_id}  -- phone {phone} ')
-            #rank1 = Rank.objects.filter(pk=rank).first()
             user = User.objects.create_user(username=username, password=password, email=email, first_name=first_name, last_name=last_name)
             print(f'** Username: {username} -- Password: {password}')
             print(f'user: {user}  -- rank: {rank}  -- personal: {personal_id}  -- phone {phone} ')
@@ -355,9 +296,6 @@ class staff_new_customer(generics.CreateAPIView):
             create_OTP(user, password)
             return redirect(f'/bankapp/staff_customer_details/{user.pk}')
         else:
-            context = {
-                'error': "error was made"
-            }
             return Response(serializer.data)
 
 class convert_currency(generics.ListAPIView):
@@ -389,6 +327,4 @@ class convert_currency(generics.ListAPIView):
             # Your JSON object
             print(amount2)
             print(con_rate)
-            #conversion = ConvertSerializer(amount2, many=True).data
-            #amount2 = AmountSerializer(amount2).data
             return Response({'amount':ResultCurrency})

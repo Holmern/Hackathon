@@ -39,7 +39,6 @@ class Customer(models.Model):
 
     @property
     def can_make_loan(self) -> bool:
-        #return self.rank.value >= settings.CUSTOMER_RANK_LOAN
         return self.rank == 'Silver' or self.rank == 'Gold'
 
     @property
