@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block main %}
+
+<h3>User profile</h3>
+
+<form method="PUT" action="{% url 'bank:user_details' user.pk %}">
+    {% csrf_token %}
+    <fieldset>
+        <label>
+            First name
+            <input id="first_name" name="first_name" type="text" value="{{first_name}}"/>
+        </label>
+        <label>
+            Last name
+            <input id="last_name" name="last_name" type="text" value="{{last_name}}"/>
+        </label>
+        <label>
+            Email
+            <input id="email" name="email" type="email" value="{{email}}"/>
+        </label>
+    <button>Update User</button>
+</fieldset>
+</form>
+
+{% endblock main %}

@@ -1,4 +1,9 @@
+
+rest-env/
+venv/
+private_info.py
 bin/
 lib/
 include/
-venv/
+
+

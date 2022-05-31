@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% load static %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <link  rel="stylesheet" href="/static/nav.css">
+    <title>3WHS INC </title>
+</head>
+<body>
+
+    {% load l10n %}
+
+    <header>
+        <h1 style="text-align: center">3WHS INC</h1>
+        {% if user.is_staff %}
+        <h2 style="text-align: center">3WHS INC Staff Portal</h2>
+        {% else %}
+        <h2 style="text-align: center">3WHS INC Customer Portal</h2>
+        {% endif %}
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="{% url 'bank:login' %}">Home</a></li>                
+                
+            {% if user.is_staff %}
+            <li><a href="{% url 'bank:staff_new_customer' %}">Create New Customer</a></li>
+            {% else %}
+            <li><a href="{% url 'bank:make_transfer' %}">Transfer</a></li>
+            <li><a href="{% url 'bank:make_external_transfer' %}">External Transfer</a></li>
+            <li><a href="{% url 'bank:make_loan' %}">Create Loan</a></li>
+            {% endif %}
+
+            {% if user.is_superuser %}
+            <li><a href="{% url 'admin:index' %}">Admin Page</a></li>
+            {% endif %}
+            <li><a href="{% url 'bank:convert_currency' %}">Currency Converter</a></li>
+            <li style="float:right"><a href="{% url 'user:logout' %}">Log out</a></li>
+        </ul>
+    </nav>
+    <br>
+    <main>
+    {% block main %}
+    {% endblock main %}
+    </main>
+
+    <footer>
+        <p>&copy; 2022 3-Way Handshake INC.</p>
+    </footer>
+    <script>
+        document.body.addEventListener('htmx:configRequest', (event) => {
+            event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block main %}
+
+<h3>Customer Details</h3>
+{% for customer in customer%}
+<form action="{% url 'bank:staff_customer_details' customer.pk %}" method="put">
+    {% csrf_token %}
+    <fieldset>
+
+        <label for="rank">Rank:</label>
+            <select name="rank" id="rank">
+                <option value="Basic">Basic</option>
+                <option value="Silver">Silver</option>
+                <option value="Gold">Gold</option>
+            </select>
+        <label>
+            Personal id
+            <input name="personal_id" type="text" value="{{customer.personal_id}}"/>
+        </label>
+        <label>
+            Phone
+            <input name="phone" type="number" value="{{customer.phone}}"/>
+        </label>
+    <button>Update Customer</button>
+    </fieldset>
+</form>
+{% for account in customer.accounts%}
+<table>
+    <thead>
+        <tr>
+            <th>Account Number</th>
+            <th>Account Name</th>
+            <th>Account Balance</th>
+        </tr>
+    </thead>
+    <tr>
+        <td><a href="{% url 'bank:staff_account_details' account.pk %}">{{ account.pk }}</a></td>
+        <td>{{ account.name }}</td>
+        <td>{{ account.balance|floatformat:"2" }}</td>
+    </tr>
+</table>
+{% endfor %}
+
+<h3>Create New Account</h3>
+<form action="{% url 'bank:staff_new_account_partial' customer.pk %}" method="post">
+    {% csrf_token %}
+    <fieldset>
+        <input name="new_account" type="text" />
+    <button>Create Account</button>
+    </fieldset>
+</form>
+
+{% endfor %}
+{% endblock main %}

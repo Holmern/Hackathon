@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block main %}
+
+<p>Welcome, {{ user }}.</p>
+
+
+<form action="{% url 'bank:staff_dashboard' %}" method="post">
+    <fieldset>
+    {% csrf_token %}
+    <label>Customer Look Up</label>
+    <input name="search_term" type="text">
+    <button> search </button>
+</fieldset>
+</form>
+
+<table>
+    <thead>
+        <th>ID</th>
+        <th>Persal ID</th>
+        <th>Name</th>
+        <th>Phone</th>
+    </thead>
+    <tbody id="search-results">
+    {% for customer in customers %}
+<tr>
+    <td><a href="{% url 'bank:staff_customer_details' customer.pk %}">{{ customer.pk }}</a></td>
+    <td>{{ customer.personal_id }}</td>
+    <td>{{ customer.full_name }}</td>
+    <td>{{ customer.phone }}</td>
+</tr>
+{% endfor %}
+    </tbody>
+</table>
+
+{% endblock main %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block main %}
+<h3>Currency Converter:</h3>
+<p>Choose  " From Currency" - Enter Amount - Choose "To Currency" - Press Convert</p>
+<form action="{% url 'bank:convert_currency' %}" method="post">
+    {% csrf_token %}
+<label for="currency1">From Currency:</label>
+  <select name="currency1" id="currency1">
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+    <option value="DKK">DKK</option>
+  </select>
+  <label>Amount</label>
+  <input type=number name=amount>
+  <label for="currency2">To Currency:</label>
+  <select name="currency2" id="currency2">
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+    <option value="DKK">DKK</option>
+  </select>
+  <h3>Result: </h3>
+    <p>{{ amount}}</p>
+  <button>Convert</button>
+</form>
+
+
+{% endblock main %}
