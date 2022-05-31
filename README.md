@@ -21,19 +21,6 @@ These are the requirements for the system:
 
 Your project should be documented appropriately (e.g., ER-Diagram, short intro), but you are not supposed to write a report.
 
-### User Stories
-1. As a Customer, i would like to see the balance for each of my accounts
-
-2. As a Customer, I would like to be able to make transactions between my accounts.
-
-3. As a Customer I would like to see my transactions between accounts, so I know where I have my capital.
-
-4. As an Employee of the Bank, I would like to see all Customers accounts, so I can consider their possibilities for loans.
-
-5. As an Employee of the Bank, I would like to CRUD Customers.
-
-6. As an Employee of the Bank, I would like to CRUD Accounts, so customers have a place to keep their capital.
-
 ## Conceptuel Model 
 ![Conceptuel Model](Banking_conceptional.png)
 
