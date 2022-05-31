@@ -14,6 +14,10 @@ These are the requirements for the system:
 - Bank employees can view all customers and accounts
 - Bank employees can create new customers and accounts and change customer rank
 - Use Python 3.9 or newer, Django 4.0 or newer
+- Customers must be able to transfer money to customers in at least one other bank in real-time (run two or more instances of the bank simultaneously)
+- Implement some kind of multi-factor authentication for customers and bank employees
+- Must implement at least one of these: REST, middleware, task queue, and channels
+- Develop two or more original features for the bank - they should be relevant to a bank
 
 Your project should be documented appropriately (e.g., ER-Diagram, short intro), but you are not supposed to write a report.
 
