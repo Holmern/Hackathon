@@ -21,9 +21,6 @@ These are the requirements for the system:
 
 Your project should be documented appropriately (e.g., ER-Diagram, short intro), but you are not supposed to write a report.
 
-## Conceptuel Model 
-![Conceptuel Model](Banking_conceptional.png)
-
 ## ER Diagram
 ![ER Diagram](Banking_Hack_ER.png)
 
