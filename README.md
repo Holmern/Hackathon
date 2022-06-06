@@ -21,11 +21,8 @@ These are the requirements for the system:
 
 Your project should be documented appropriately (e.g., ER-Diagram, short intro), but you are not supposed to write a report.
 
-## Conceptuel Model 
-![Conceptuel Model](Banking_conceptional.png)
-
 ## ER Diagram
-![ER Diagram](Banking_Hack_ER.png)
+![ER Diagram](Skærmbillede 2022-05-31 kl. 22.14.32.png)
 
 ## Running the project
 Once the project is on your local machine, run the following commands in the terminal.
