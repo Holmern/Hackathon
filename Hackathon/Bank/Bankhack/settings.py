@@ -160,7 +160,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # User Accounts settings
 
 LOGIN_REDIRECT_URL = '/bankapp/'
-LOGOUT_REDIRECT_URL = '/bankapp/'
+LOGOUT_REDIRECT_URL = '/mfa/'
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

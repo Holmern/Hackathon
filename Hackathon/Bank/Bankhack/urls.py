@@ -19,7 +19,7 @@ from django.urls import include, path
 from django_otp.forms import OTPAuthenticationForm
 
 from rest_framework_swagger.views import get_swagger_view
-schema_view = get_swagger_view(title='API name')
+schema_view = get_swagger_view(title='3WHS API DOCS')
 from django.urls import path
 
 urlpatterns = [

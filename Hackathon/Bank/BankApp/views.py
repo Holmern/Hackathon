@@ -19,7 +19,7 @@ from .serializers import *
 
 class login(APIView):
     permissions_classes = [permissions.IsAuthenticated, ]
-    permission_classes = (permissions.AllowAny,)
+    permissions_classes = (permissions.AllowAny,)
 
     def get(self, request):
         if request.user.is_authenticated:
@@ -291,10 +291,10 @@ class staff_new_customer(generics.CreateAPIView):
             user = User.objects.create_user(username=username, password=password, email=email, first_name=first_name, last_name=last_name)
             print(f'** Username: {username} -- Password: {password}')
             print(f'user: {user}  -- rank: {rank}  -- personal: {personal_id}  -- phone {phone} ')
-            Customer.objects.create(user=user, rank=rank, personal_id=personal_id, phone=phone)
+            customer = Customer.objects.create(user=user, rank=rank, personal_id=personal_id, phone=phone)
             Token.objects.create(user=user)
             create_OTP(user, password)
-            return redirect(f'/bankapp/staff_customer_details/{user.pk}')
+            return redirect(f'/bankapp/staff_customer_details/{customer.pk}')
         else:
             return Response(serializer.data)
 
