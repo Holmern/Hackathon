@@ -125,19 +125,21 @@ class make_external_transfer(generics.ListCreateAPIView):
             external_transfer = request.data['external_transfer']
             bank_code = request.data['bank_code']
 
-            if bank_code != '8000':
+            if bank_code == '8000':
                 transfer = Ledger.extern_receive_transfer(int(amount), debit_account, debit_text, credit_account, f'External transfer: {credit_text}')
                 return redirect(f'/bankapp/transaction_details/{transfer}') 
-            else:
+            elif bank_code == '5050':
                     
                 transfer = Ledger.extern_transfer(int(amount), debit_account, f'External transfer: {debit_text}', credit_account, credit_text)
                     
                 payload = {"amount": int(amount), "debit_account": debit_account_pk, "debit_text": debit_text, "credit_account": credit_account_pk,"credit_text": credit_text, "external_transfer": external_transfer, 'bank_code': bank_code}
                 headers = {"Authorization": f'Token 99f0f6983d8e284f4cf7b03ac21e921e94953904'}#, "X-CSRFToken": request.data['csrfmiddlewaretoken']}
-                r = requests.post('http://127.0.0.1:5050/bankapp/make_external_transfer/', data=payload, headers=headers)
+                r = requests.post(f'http://127.0.0.1:{bank_code}/bankapp/make_external_transfer/', data=payload, headers=headers)
                 print(r.status_code, r)
                 
-                return redirect(f'/bankapp/transaction_details/{transfer}') 
+                return redirect(f'/bankapp/transaction_details/{transfer}')
+            else:
+                return 'Wrong bank code' 
         else:
             print('serializer not valid!')
     
