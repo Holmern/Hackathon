@@ -105,7 +105,7 @@ class Ledger(models.Model):
     @classmethod
     def extern_transfer(cls, amount, debit_account, debit_text, credit_account, credit_text, is_loan=False) -> int:
         assert amount >= 0, 'Negative amount not allowed for transfer.'
-        account = Account.objects.filter(pk=18).first()
+        account = Account.objects.filter(pk=18).first() #pk 18 for bank user (Ledger table 0)
         with transaction.atomic():
             if debit_account.balance >= amount or is_loan:
                     uid = UID.uid
@@ -120,7 +120,7 @@ class Ledger(models.Model):
     @classmethod
     def extern_receive_transfer(cls, amount, debit_account, debit_text, credit_account, credit_text, is_loan=False) -> int:
         assert amount >= 0, 'Negative amount not allowed for transfer.'
-        account = Account.objects.filter(pk=18).first()
+        account = Account.objects.filter(pk=18).first() #pk 18 for bank user (Ledger table 0)
         with transaction.atomic():
             uid = UID.uid
             print(uid)

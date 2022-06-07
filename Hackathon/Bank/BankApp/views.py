@@ -1,4 +1,6 @@
 from decimal import Decimal
+from email.mime import application
+import json
 from secrets import token_urlsafe
 
 import requests
@@ -106,21 +108,22 @@ class make_external_transfer(generics.ListCreateAPIView):
     template_name = 'BankApp/make_external_transfer.html'
     serializer_class = TransferExternalSerializer
     permissions_classes = [permissions.IsAuthenticated, ]
+    #authentication_classes = ()
     
     def post(self, request):
         assert not request.user.is_staff, 'Staff user routing customer view.'
         serializer = TransferExternalSerializer(data=request.data)
         print(request.data)
         if serializer.is_valid():
-            amount = request.POST['amount']
-            debit_account = Account.objects.filter(pk=request.POST['debit_account']).first()
-            debit_account_pk = request.POST['debit_account']
-            debit_text = request.POST['debit_text']
-            credit_account = Account.objects.filter(pk=request.POST['credit_account']).first()
-            credit_account_pk = request.POST['credit_account']
-            credit_text = request.POST['credit_text']
-            external_transfer = request.POST['external_transfer']
-            bank_code = request.POST['bank_code']
+            amount = request.data['amount']
+            debit_account = Account.objects.filter(pk=request.data['debit_account']).first()
+            debit_account_pk = request.data['debit_account']
+            debit_text = request.data['debit_text']
+            credit_account = Account.objects.filter(pk=request.data['credit_account']).first()
+            credit_account_pk = request.data['credit_account']
+            credit_text = request.data['credit_text']
+            external_transfer = request.data['external_transfer']
+            bank_code = request.data['bank_code']
 
             if bank_code != '8000':
                 transfer = Ledger.extern_receive_transfer(int(amount), debit_account, debit_text, credit_account, f'External transfer: {credit_text}')
@@ -130,7 +133,7 @@ class make_external_transfer(generics.ListCreateAPIView):
                 transfer = Ledger.extern_transfer(int(amount), debit_account, f'External transfer: {debit_text}', credit_account, credit_text)
                     
                 payload = {"amount": int(amount), "debit_account": debit_account_pk, "debit_text": debit_text, "credit_account": credit_account_pk,"credit_text": credit_text, "external_transfer": external_transfer, 'bank_code': bank_code}
-                headers = {"Authorization": f'Token 99f0f6983d8e284f4cf7b03ac21e921e94953904', "X-CSRFToken": request.data['csrfmiddlewaretoken']} #"User-Agent": 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36'
+                headers = {"Authorization": f'Token 99f0f6983d8e284f4cf7b03ac21e921e94953904'}#, "X-CSRFToken": request.data['csrfmiddlewaretoken']}
                 r = requests.post('http://127.0.0.1:5050/bankapp/make_external_transfer/', data=payload, headers=headers)
                 print(r.status_code, r)
                 
