@@ -108,7 +108,6 @@ class make_external_transfer(generics.ListCreateAPIView):
     template_name = 'BankApp/make_external_transfer.html'
     serializer_class = TransferExternalSerializer
     permissions_classes = [permissions.IsAuthenticated, ]
-    #authentication_classes = ()
     
     def post(self, request):
         assert not request.user.is_staff, 'Staff user routing customer view.'

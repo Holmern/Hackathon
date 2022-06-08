@@ -52,7 +52,7 @@ class TransferExternalSerializer(serializers.Serializer):
     bank_code = serializers.CharField(label='bank_code')
 
     class Meta:
-        fields = ('amount', 'debit_account', 'debit_tet', 'credit_account', 'credit_text', 'external_transfer', 'bank_code')
+        fields = ('amount', 'debit_account', 'debit_text', 'credit_account', 'credit_text', 'external_transfer', 'bank_code')
 
 
 class LoanSerializer(serializers.Serializer):
